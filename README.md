@@ -1,0 +1,2 @@
+# rmcgeo
+Plugin QGIS
