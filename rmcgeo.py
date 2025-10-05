@@ -30,6 +30,7 @@ from qgis.PyQt.QtCore import Qt, QCoreApplication, QSettings, QTranslator
 #Importações de Modulos do Plugin, caso esteja comentado a ferramenta não esta disponivel ou funcional.
 from .modules.gms_to_decimal import run as run_gms_decimal
 from .modules.street_view import run as run_street_view
+from .modules.point_insert import run as run_point_insert
 #from .modules.geographic_calculator import run as ConversorAvancado
 #from .modules.geo_to_cartesiano import run as run_cart_geo
 #from .modules.modulo21 import run as run_copy_coord
