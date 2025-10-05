@@ -36,6 +36,11 @@ class street_view_class(QgsMapTool):
         self.setCursor(QCursor(Qt.CrossCursor))
 
     def canvasPressEvent(self, event):
+        # Verifica se foi clique com botão direito
+        if event.button() == Qt.RightButton:
+            self.canvas.unsetMapTool(self)
+            return
+            
         point = self.toMapCoordinates(event.pos())
         source_crs = self.canvas.mapSettings().destinationCrs()
         dest_crs = QgsCoordinateReferenceSystem("EPSG:4326")

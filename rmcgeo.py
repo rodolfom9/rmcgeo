@@ -31,11 +31,11 @@ from qgis.PyQt.QtCore import Qt, QCoreApplication, QSettings, QTranslator
 from .modules.gms_to_decimal import run as run_gms_decimal
 from .modules.street_view import run as run_street_view
 from .modules.point_insert import run as run_point_insert
+from .modules.copy_coordenadas import run as run_copy_coord_def
 #from .modules.geographic_calculator import run as ConversorAvancado
 #from .modules.geo_to_cartesiano import run as run_cart_geo
 #from .modules.modulo21 import run as run_copy_coord
 #from .modules.linha_pega_ponto import ToggleLigaLinha
-#from .modules.modulo32 import run as run_modulo32
 
 from .about import AboutDialog
 import os.path
