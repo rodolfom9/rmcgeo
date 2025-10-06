@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AzimuthDialog</class>
+ <widget class="QDialog" name="AzimuthDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>447</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Desenhar por Azimute e Distância</string>
+  </property>
+  <property name="styleSheet">
+   <string>
+    QDialog {
+        background-color: #f5f5f5;
+    }
+    QLineEdit {
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+        padding: 5px;
+        background-color: #ffffff;
+    }
+    QLineEdit:focus {
+        border-color: #4a90e2;
+    }
+    QPushButton {
+        background-color: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 8px;
+        min-width: 80px;
+    }
+    QPushButton:hover {
+        background-color: #357abd;
+    }
+    QTableWidget {
+        border: 1px solid #cccccc;
+        border-radius: 1px;
+        background-color: #ffffff;
+        alternate-background-color: #f0f0f0;
+    }
+    QTableWidget::item {
+        padding: 1px;
+    }
+    QPushButton#salvarButton {
+        background-color: #2ecc71;
+    }
+    QPushButton#salvarButton:hover {
+        background-color: #27ae60;
+    }
+   </string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>10</number>
+   </property>
+   <property name="leftMargin">
+    <number>15</number>
+   </property>
+   <property name="topMargin">
+    <number>15</number>
+   </property>
+   <property name="rightMargin">
+    <number>15</number>
+   </property>
+   <property name="bottomMargin">
+    <number>15</number>
+   </property>
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::ExpandingFieldsGrow</enum>
+     </property>
+     <property name="labelAlignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="verticalSpacing">
+      <number>10</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelAzimute">
+       <property name="styleSheet">
+        <string>color: #333333; font-weight: bold;</string>
+       </property>
+       <property name="text">
+        <string>Azimute (graus):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="azimuteInput">
+       <property name="toolTip">
+        <string>Informe o azimute em graus (0 a 360)</string>
+       </property>
+       <property name="placeholderText">
+        <string>Ex.: 45 30 15 (entre 0 e 360)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labelDistancia">
+       <property name="styleSheet">
+        <string>color: #333333; font-weight: bold;</string>
+       </property>
+       <property name="text">
+        <string>Distância (metros):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="distanciaInput">
+       <property name="toolTip">
+        <string>Informe a distância em metros</string>
+       </property>
+       <property name="placeholderText">
+        <string>Ex.: 100.50</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelCoordenadas">
+     <property name="styleSheet">
+      <string>color: #333333; font-weight: bold;</string>
+     </property>
+     <property name="text">
+      <string>Coordenadas Calculadas:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableWidget" name="coordenadasTable">
+     <property name="toolTip">
+      <string>Coordenadas dos pontos inseridos. Clique duas vezes para editar um valor.</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="columnCount">
+      <number>2</number>
+     </property>
+     <column>
+      <property name="text">
+       <string>Azimute</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Distância</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>10</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="icon">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="inserirButton">
+       <property name="toolTip">
+        <string>Adicionar segmento ao traçado</string>
+       </property>
+       <property name="text">
+        <string>Inserir</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>:/plugins/icons/add.png</normaloff>:/plugins/icons/add.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="desfazerButton">
+       <property name="toolTip">
+        <string>Remover o último segmento</string>
+       </property>
+       <property name="text">
+        <string>Desfazer</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>:/plugins/icons/undo.png</normaloff>:/plugins/icons/undo.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="salvarButton">
+       <property name="toolTip">
+        <string>Salvar o traçado no mapa</string>
+       </property>
+       <property name="text">
+        <string>Salvar</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>:/plugins/icons/save.png</normaloff>:/plugins/icons/save.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
