@@ -98,12 +98,6 @@ class RMCGeo:
         self.action_rumo.triggered.connect(lambda: run_rumo_distance(self.iface))
         menu_aplicativos.addAction(self.action_rumo)
 
-        #Calculadora Geográfica
-        self.geo_calculator = QAction(QIcon(':/images/themes/default/mActionCalculateField.svg'),
-        "Geographic Calculator", self.iface.mainWindow())
-        self.geo_calculator.triggered.connect(lambda: ConversorAvancado(self.iface))
-        menu_aplicativos.addAction(self.geo_calculator)
-
         #Conversor de Graus decimal para GMS
         self.action11 = QAction(QIcon(':/images/themes/default/mActionCalculateField.svg'),
         self.tr("Decimal to GMS Converter"), self.iface.mainWindow())
@@ -132,6 +126,46 @@ class RMCGeo:
         self.action_street_view.triggered.connect(lambda: run_street_view(self.iface))
         menu_ferramentas.addAction(self.action_street_view)
 
+        menu_manipulador_tabela = QMenu(self.tr("Table Manipulation"), self.plugin_menu)
+        menu_manipulador_tabela.setIcon(QIcon(':/images/themes/default/processingAlgorithm.svg'))
+        self.plugin_menu.addMenu(menu_manipulador_tabela)
+
+        #Adicionar Área na Tabela de Atributos
+        self.action_add_area = QAction(QIcon(':/images/themes/default/mActionNewAttribute.svg'),
+        self.tr("Add Area to Table"), self.iface.mainWindow())
+        self.action_add_area.triggered.connect(lambda: run_add_area_tabela(self.iface))
+        menu_manipulador_tabela.addAction(self.action_add_area)
+
+        #Adicionar Azimute em GMS na Tabela de Atributos
+        self.action_add_azimute = QAction(QIcon(':/images/themes/default/mActionNewAttribute.svg'),
+        self.tr("Add Azimuth GMS to Table"), self.iface.mainWindow())
+        self.action_add_azimute.triggered.connect(lambda: run_add_azimute_tabela(self.iface))
+        menu_manipulador_tabela.addAction(self.action_add_azimute)
+
+        #Adicionar Perímetro na Tabela de Atributos
+        self.action_add_perimetro = QAction(QIcon(':/images/themes/default/mActionNewAttribute.svg'),
+        self.tr("Add Perimeter to Table"), self.iface.mainWindow())
+        self.action_add_perimetro.triggered.connect(lambda: run_add_perimetro_tabela(self.iface))
+        menu_manipulador_tabela.addAction(self.action_add_perimetro)
+
+        #Adicionar Coordenada X na Tabela de Atributos
+        self.action_add_coord_x = QAction(QIcon(':/images/themes/default/mActionNewAttribute.svg'),
+        self.tr("Add Coordinate X to Table"), self.iface.mainWindow())
+        self.action_add_coord_x.triggered.connect(lambda: run_add_coord_x_tabela(self.iface))
+        menu_manipulador_tabela.addAction(self.action_add_coord_x)
+
+        #Adicionar Coordenada Y na Tabela de Atributos
+        self.action_add_coord_y = QAction(QIcon(':/images/themes/default/mActionNewAttribute.svg'),
+        self.tr("Add Coordinate Y to Table"), self.iface.mainWindow())
+        self.action_add_coord_y.triggered.connect(lambda: run_add_coord_y_tabela(self.iface))
+        menu_manipulador_tabela.addAction(self.action_add_coord_y)
+
+        #Adicionar Comprimento na Tabela de Atributos
+        self.action_add_comprimento = QAction(QIcon(':/images/themes/default/mActionNewAttribute.svg'),
+        self.tr("Add Length to Table"), self.iface.mainWindow())
+        self.action_add_comprimento.triggered.connect(lambda: run_add_comprimento_tabela(self.iface))
+        menu_manipulador_tabela.addAction(self.action_add_comprimento)
+        
         #Sobre o RMCGEO
         self.menu_about = QAction(QIcon(':/images/themes/default/mActionHelpContents.svg'),
             self.tr("About RMCGEO"), self.iface.mainWindow())

@@ -36,7 +36,7 @@ class AboutDialog(QDialog, FORM_CLASS):
         self.setupUi(self)
         # Aqui você pode preencher campos dinamicamente, se quiser
         self.plugin_name.setText("RMCGEO")
-        self.plugin_version.setText("Versão 1.4.0")
+        self.plugin_version.setText("Versão 1.5.0")
         
         # Conecta o botão de fechar
         self.close.accepted.connect(self.accept)
