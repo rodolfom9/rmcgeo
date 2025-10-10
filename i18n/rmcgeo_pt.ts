@@ -35,5 +35,37 @@
         <source>About RMCGEO</source>
         <translation>Sobre o RMCGEO</translation>
     </message>
+    <message>
+        <source>Drawing by Rumo and Distance</source>
+        <translation>Desenho por Rumo e Distância</translation>
+    </message>
+    <message>
+        <source>Table Manipulation</source>
+        <translation>Manipulação de Tabela</translation>
+    </message>
+    <message>
+        <source>Add Area to Table</source>
+        <translation>Adicionar Área na Tabela</translation>
+    </message>
+    <message>
+        <source>Add Azimuth GMS to Table</source>
+        <translation>Adicionar Azimute GMS na Tabela</translation>
+    </message>
+    <message>
+        <source>Add Perimeter to Table</source>
+        <translation>Adicionar Perímetro na Tabela</translation>
+    </message>
+    <message>
+        <source>Add Coordinate X to Table</source>
+        <translation>Adicionar Coordenada X na Tabela</translation>
+    </message>
+    <message>
+        <source>Add Coordinate Y to Table</source>
+        <translation>Adicionar Coordenada Y na Tabela</translation>
+    </message>
+    <message>
+        <source>Add Length to Table</source>
+        <translation>Adicionar Comprimento na Tabela</translation>
+    </message>
 </context>
 </TS>
