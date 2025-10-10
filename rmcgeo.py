@@ -38,6 +38,7 @@ from .modules.add_azimute_tabela import run as run_add_azimute_tabela
 from .modules.add_perimetro_tabela import run as run_add_perimetro_tabela
 from .modules.add_coord_x_tabela import run as run_add_coord_x_tabela
 from .modules.add_coord_y_tabela import run as run_add_coord_y_tabela
+from .modules.add_comprimento_tabela import run as run_add_comprimento_tabela
 
 from .about import AboutDialog
 import os.path
