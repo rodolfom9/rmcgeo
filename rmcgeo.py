@@ -33,6 +33,7 @@ from .modules.point_insert import run as run_point_insert
 from .modules.copy_coordenadas import run as run_copy_coord_def
 from .modules.desenho_azimute import run as run_azimuth_distance
 from .modules.desenho_rumo import run as run_rumo_distance
+from .modules.add_area_tabela import run as run_add_area_tabela
 
 from .about import AboutDialog
 import os.path
@@ -165,7 +166,7 @@ class RMCGeo:
         self.tr("Add Length to Table"), self.iface.mainWindow())
         self.action_add_comprimento.triggered.connect(lambda: run_add_comprimento_tabela(self.iface))
         menu_manipulador_tabela.addAction(self.action_add_comprimento)
-        
+
         #Sobre o RMCGEO
         self.menu_about = QAction(QIcon(':/images/themes/default/mActionHelpContents.svg'),
             self.tr("About RMCGEO"), self.iface.mainWindow())
