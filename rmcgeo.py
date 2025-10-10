@@ -34,6 +34,7 @@ from .modules.copy_coordenadas import run as run_copy_coord_def
 from .modules.desenho_azimute import run as run_azimuth_distance
 from .modules.desenho_rumo import run as run_rumo_distance
 from .modules.add_area_tabela import run as run_add_area_tabela
+from .modules.add_azimute_tabela import run as run_add_azimute_tabela
 
 from .about import AboutDialog
 import os.path
