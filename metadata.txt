@@ -10,7 +10,7 @@ version=1.5.6
 author=Rodolfo Martins de Carvalho
 email=rodolfomartins09@gmail.com
 
-about=RMCGEO é um conjunto de ferramentas para simplificar tarefas.
+about=RMCGEO é um conjunto abrangente de ferramentas geoespaciais que inclui: conversão de coordenadas, desenho por azimute e distância, desenho por rumo e distância, inserção de pontos por coordenadas, visualização Street View, cópia de coordenadas e ferramentas avançadas de manipulação de tabelas de atributos.
 
 tracker=https://github.com/rodolfom9/rmcgeo/issues
 repository=https://github.com/rodolfom9/rmcgeo
@@ -31,7 +31,7 @@ changelog=
 # Tags are comma separated with spaces allowed
 tags=python, coordinates, memorial, azimuth, distance, Azimute, Distancia, Rumo, Desenho
 
-homepage=https://github.com/rodolfom9
+homepage=https://rmcgeo.com.br/
 category=Plugins
 icon=icon.svg
 # experimental flag
