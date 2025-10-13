@@ -1,2 +1,1 @@
-# rmcgeo
-Plugin QGIS
+RMCGEO is a comprehensive set of geospatial tools that includes: coordinate conversion, drawing by azimuth and distance, drawing by bearing and distance, insertion of points by coordinates, copying coordinates and advanced tools for manipulating attribute tables.
