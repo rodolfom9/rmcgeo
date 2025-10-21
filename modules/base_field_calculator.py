@@ -24,9 +24,8 @@ from qgis.PyQt.QtWidgets import QMessageBox, QDialog
 from qgis.PyQt import uic
 from qgis.core import (QgsProject,QgsField,QgsExpression,QgsExpressionContext,
                         QgsExpressionContextUtils,QgsWkbTypes,QgsVectorLayer)
-from qgis.PyQt.QtCore import QVariant
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
+from qgis.PyQt.QtCore import QVariant, Qt
+from qgis.PyQt.QtGui import QPixmap
 import os
 
 # Carrega o arquivo .ui

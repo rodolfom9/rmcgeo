@@ -22,9 +22,9 @@
 
 from qgis.gui import QgsMapTool, QgsRubberBand
 from qgis.PyQt import QtWidgets
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QHeaderView, QAbstractItemView
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtWidgets import QHeaderView, QAbstractItemView
 from qgis.core import (QgsPointXY, QgsProject, Qgis,
                       QgsGeometry, QgsVectorLayer, QgsFeature, QgsWkbTypes)
 import math
@@ -40,7 +40,11 @@ class BaseBearingTool(QgsMapTool):
         self.start_point = None
         self.rubber_band = None
         self.dlg = None
-        self.setCursor(Qt.CrossCursor)
+        # Compatibilidade Qt5/Qt6:
+        try:
+            self.setCursor(Qt.CursorShape.CrossCursor)  # Qt6
+        except AttributeError:
+            self.setCursor(Qt.CrossCursor)  # Qt5
         
         self.inserted_values = [] # Lista para armazenar os valores inseridos
         
@@ -141,11 +145,21 @@ class BaseBearingTool(QgsMapTool):
         """Configura a tabela de coordenadas."""
         table = self.dlg.coordenadasTable
         header = table.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)
+        # Compatibilidade Qt5/Qt6:
+        try:
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)  # Qt6
+        except AttributeError:
+            header.setSectionResizeMode(QHeaderView.Stretch)  # Qt5
         table.setColumnCount(2)
         
-        # Permitir edição na tabela
-        table.setEditTriggers(QAbstractItemView.DoubleClicked | 
+        # Compatibilidade Qt5/Qt6:
+        try:
+            # Qt6
+            table.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked | 
+                                 QAbstractItemView.EditTrigger.EditKeyPressed)
+        except AttributeError:
+            # Qt5
+            table.setEditTriggers(QAbstractItemView.DoubleClicked | 
                              QAbstractItemView.EditKeyPressed)
         
         table.cellChanged.connect(self.ao_mudar_celula)
@@ -283,7 +297,13 @@ class BaseBearingTool(QgsMapTool):
 
     def canvasReleaseEvent(self, event):
         """Captura quando o botão do mouse é solto."""
-        if event.button() == Qt.RightButton:
+        # Compatibilidade Qt5/Qt6: MouseButton enum
+        try:
+            right_button = Qt.MouseButton.RightButton  # Qt6
+        except AttributeError:
+            right_button = Qt.RightButton  # Qt5
+        
+        if event.button() == right_button:
             # Fechar o diálogo se estiver aberto
             if self.dlg and self.dlg.isVisible():
                 self.dlg.close()

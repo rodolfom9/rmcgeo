@@ -24,7 +24,7 @@ from qgis.gui import QgsMapTool, QgsRubberBand
 from qgis.core import Qgis, QgsProject, QgsPointXY, QgsGeometry, QgsWkbTypes
 from qgis.PyQt.QtGui import QCursor, QColor
 from qgis.PyQt.QtWidgets import QApplication
-from PyQt5.QtCore import Qt
+from qgis.PyQt.QtCore import Qt
 
 class copy_coordenada(QgsMapTool):
     def __init__(self, canvas, iface):

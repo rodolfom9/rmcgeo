@@ -22,9 +22,9 @@
 
 from .rumo_azimute_base import BaseBearingTool
 from qgis.PyQt import uic, QtWidgets
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QTableWidgetItem
+from qgis.PyQt.QtCore import QSize
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QTableWidgetItem
 from qgis.core import Qgis
 import os
 
