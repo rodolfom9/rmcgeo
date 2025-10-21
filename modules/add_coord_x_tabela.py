@@ -38,4 +38,8 @@ class CoordXTabelaDialog(BaseCalculadoraTabela):
 def run(iface):
     """Função principal que abre o diálogo"""
     dialog = CoordXTabelaDialog(iface)
-    dialog.exec_()
+    # Compatibilidade Qt5/Qt6: exec_() foi renomeado para exec()
+    if hasattr(dialog, 'exec'):
+        dialog.exec()
+    else:
+        dialog.exec_()

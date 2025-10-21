@@ -55,8 +55,17 @@ class BaseCalculadoraTabela(QDialog, FORM_CLASS):
         icon_path = os.path.join(os.path.dirname(__file__), '..', 'icon.svg')
         if os.path.exists(icon_path):
             pixmap = QPixmap(icon_path)
-            self.icon.setPixmap(pixmap.scaled(32, 32, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        
+             # Compatibilidade Qt5/Qt6: AspectRatioMode e TransformationMode enums
+            try:
+                # Qt6
+                aspect_ratio = Qt.AspectRatioMode.KeepAspectRatio
+                transformation = Qt.TransformationMode.SmoothTransformation
+            except AttributeError:
+                # Qt5
+                aspect_ratio = Qt.KeepAspectRatio
+                transformation = Qt.SmoothTransformation
+            self.icon.setPixmap(pixmap.scaled(32, 32, aspect_ratio, transformation))
+                   
         # Configura a interface
         self.setWindowTitle(self.window_title)
         self.select_camada.setText("Selecione a Camada:")

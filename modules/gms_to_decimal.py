@@ -303,7 +303,11 @@ def run(iface):
     dlg = GmsToDecimal(iface=iface)
     dlg.reset_fields()
     dlg.show()
-    dlg.exec_()
+    # Compatibilidade Qt5/Qt6: exec_() foi renomeado para exec()
+    if hasattr(dlg, 'exec'):
+        dlg.exec()
+    else:
+        dlg.exec_()
 
 def unload():
     """Função para limpar recursos quando o plugin for descarregado."""

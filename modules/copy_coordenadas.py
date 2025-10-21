@@ -31,8 +31,12 @@ class copy_coordenada(QgsMapTool):
         super().__init__(canvas)
         self.canvas = canvas
         self.iface = iface
-        self.setCursor(QCursor(Qt.CrossCursor))  # Cursor em forma de cruz
-
+        # Compatibilidade Qt5/Qt6: CursorShape enum
+        try:
+            self.setCursor(QCursor(Qt.CursorShape.CrossCursor))  # Qt6
+        except AttributeError:
+            self.setCursor(QCursor(Qt.CrossCursor))  # Qt5
+            
         # Configuração de snapping
         self.snap_utils = iface.mapCanvas().snappingUtils()
 

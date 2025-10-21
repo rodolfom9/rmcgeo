@@ -32,11 +32,21 @@ class street_view_class(QgsMapTool):
         super().__init__(canvas)
         self.canvas = canvas
         self.iface = iface
-        self.setCursor(QCursor(Qt.CrossCursor))
+        # Compatibilidade Qt5/Qt6: CursorShape enum
+        try:
+            self.setCursor(QCursor(Qt.CursorShape.CrossCursor))  # Qt6
+        except AttributeError:
+            self.setCursor(QCursor(Qt.CrossCursor))  # Qt5
 
     def canvasPressEvent(self, event):
         # Verifica se foi clique com botão direito
-        if event.button() == Qt.RightButton:
+        # Compatibilidade Qt5/Qt6: MouseButton enum
+        try:
+            right_button = Qt.MouseButton.RightButton  # Qt6
+        except AttributeError:
+            right_button = Qt.RightButton  # Qt5
+        
+        if event.button() == right_button:
             self.canvas.unsetMapTool(self)
             return
             

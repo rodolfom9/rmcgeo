@@ -148,7 +148,16 @@ class PointInsertDialog(QDialog, FORM_CLASS):
         icon_path = os.path.join(os.path.dirname(__file__), '..', 'icon.svg')
         if os.path.exists(icon_path):
             pixmap = QPixmap(icon_path)
-            self.label_3.setPixmap(pixmap.scaled(24, 24, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            # Compatibilidade Qt5/Qt6: AspectRatioMode e TransformationMode enums
+            try:
+                # Qt6
+                aspect_ratio = Qt.AspectRatioMode.KeepAspectRatio
+                transformation = Qt.TransformationMode.SmoothTransformation
+            except AttributeError:
+                # Qt5
+                aspect_ratio = Qt.KeepAspectRatio
+                transformation = Qt.SmoothTransformation
+            self.label_3.setPixmap(pixmap.scaled(24, 24, aspect_ratio, transformation))
 
         # Conecta os botões
         self.confirmButton.clicked.connect(self.on_confirm)
