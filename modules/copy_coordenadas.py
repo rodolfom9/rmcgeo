@@ -70,10 +70,16 @@ class copy_coordenada(QgsMapTool):
     def canvasPressEvent(self, event):
         """Captura o clique no mapa e copia as coordenadas no CRS atual para o clipboard."""
         # Verifica se foi clique com botão direito
-        if event.button() == Qt.RightButton:
+        # Compatibilidade Qt5/Qt6: MouseButton enum
+        try:
+            right_button = Qt.MouseButton.RightButton  # Qt6
+        except AttributeError:
+            right_button = Qt.RightButton  # Qt5
+        
+        if event.button() == right_button:
             self.canvas.unsetMapTool(self)
             return
-            
+                    
         screen_pos = event.pos()
         # Usa o snapping com as configurações atuais do projeto
         snap_match = self.snap_utils.snapToMap(screen_pos)

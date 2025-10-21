@@ -22,7 +22,7 @@
 
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QCursor
-from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject,Qgis
 from qgis.gui import QgsMapTool
 import webbrowser
 
@@ -62,7 +62,7 @@ class street_view_class(QgsMapTool):
         street_view_url = f"https://www.google.com/maps/@{latitude},{longitude},3a,75y,90t/data=!3m6!1e1!3m4!1s!2e0!7i16384!8i8192"
         webbrowser.open(street_view_url)
         self.canvas.unsetMapTool(self)  # Desativa a ferramenta após o clique
-        self.iface.messageBar().pushMessage("Street View", "Street View aberto!", level=3)
+        self.iface.messageBar().pushMessage("Street View", "Street View aberto!", level=Qgis.Info)
 
 
 def street_view(iface):
@@ -70,7 +70,7 @@ def street_view(iface):
     canvas = iface.mapCanvas()
     tool = street_view_class(canvas, iface)
     canvas.setMapTool(tool)
-    iface.messageBar().pushMessage("Street View", "Clique no mapa para abrir o Street View", level=3)
+    iface.messageBar().pushMessage("Street View", "Clique no mapa para abrir o Street View", level=Qgis.Info)
 
 def run(iface):
     street_view(iface)
