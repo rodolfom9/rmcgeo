@@ -180,7 +180,11 @@ class RMCGeo:
 
     def show_about(self):
         dlg = AboutDialog(self.iface.mainWindow())
-        dlg.exec_()
+        # Compatibilidade Qt5/Qt6: exec_() foi renomeado para exec()
+        if hasattr(dlg, 'exec'):
+            dlg.exec()
+        else:
+            dlg.exec_()
 
     def unload(self):
         if hasattr(self, 'plugin_menu'):
