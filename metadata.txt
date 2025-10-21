@@ -5,6 +5,7 @@
 [general]
 name=RMCGEO
 qgisMinimumVersion=3.16
+qgisMaximumVersion=4.99
 supportsQt6=True
 description=Set of tools to simplify cartography tasks
 version=1.6.4
@@ -12,7 +13,7 @@ author=Rodolfo Martins de Carvalho
 email=rodolfomartins09@gmail.com
 
 about=RMCGEO is a comprehensive set of geospatial tools that includes: coordinate conversion, drawing by azimuth and distance, drawing by bearing and distance, insertion of points by coordinates, copying coordinates and tools for manipulating attribute tables.
-Português: RMCGEO é um conjunto abrangente de ferramentas geoespaciais que inclui: conversão de coordenadas, desenho por azimute e distância, desenho por rumo e distância, inserção de pontos por coordenadas, cópia de coordenadas e ferramentas para manipulação de tabelas de atributos.
+    Português: RMCGEO é um conjunto abrangente de ferramentas geoespaciais que inclui: conversão de coordenadas, desenho por azimute e distância, desenho por rumo e distância, inserção de pontos por coordenadas, cópia de coordenadas e ferramentas para manipulação de tabelas de atributos.
 
 
 tracker=https://github.com/rodolfom9/rmcgeo/issues
