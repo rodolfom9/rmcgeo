@@ -22,11 +22,11 @@
 
 from qgis.core import QgsPointXY, QgsGeometry, QgsFeature, QgsVectorLayer, QgsWkbTypes
 from qgis.gui import QgsMapTool
-from PyQt5.QtWidgets import QDialog, QMessageBox
+from qgis.PyQt.QtWidgets import QDialog, QMessageBox
 from qgis.PyQt import uic
 from qgis.utils import iface
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
+from qgis.PyQt.QtGui import QPixmap
+from qgis.PyQt.QtCore import Qt
 import os
 
 # Carrega o arquivo .ui

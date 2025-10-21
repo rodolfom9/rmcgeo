@@ -297,7 +297,7 @@ class BaseBearingTool(QgsMapTool):
 
     def canvasReleaseEvent(self, event):
         """Captura quando o botão do mouse é solto."""
-        # Compatibilidade Qt5/Qt6: MouseButton enum
+        # Compatibilidade Qt5/Qt6:
         try:
             right_button = Qt.MouseButton.RightButton  # Qt6
         except AttributeError:
