@@ -24,7 +24,7 @@ from .rumo_azimute_base import BaseBearingTool
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import QSize
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QTableWidgetItem
+from qgis.PyQt.QtWidgets import QTableWidgetItem, QMessageBox
 from qgis.core import Qgis
 import os
 
@@ -323,6 +323,35 @@ class RumoDistanceDialog(QtWidgets.QDialog, FORM_CLASS):
 def run(iface):
     """Função para executar a ferramenta de rumo e distância."""
     canvas = iface.mapCanvas()
+    crs = canvas.mapSettings().destinationCrs()
+    # Verificar se é sistema de coordenadas projetado e se é UTM
+    if crs.isGeographic():
+        QMessageBox.warning(
+            iface.mainWindow(),
+            "Sistema de Coordenadas Inválido",
+            "Esta ferramenta funciona apenas com sistemas de coordenadas UTM.\n\n"
+            "Por favor, altere o sistema de coordenadas do projeto para UTM."
+        )
+        return
+    
+    # Verificar se a projeção contém "UTM" ou "Transverse Mercator" no nome
+    proj_name = crs.description().upper()
+    projection_method = crs.projectionAcronym().upper()
+    
+    is_utm = ("UTM" in proj_name or 
+              "UTM" in projection_method or 
+              "UNIVERSAL TRANSVERSE MERCATOR" in proj_name)
+    
+    if not is_utm:
+        QMessageBox.warning(
+            iface.mainWindow(),
+            "Sistema de Coordenadas Inválido",
+            f"Esta ferramenta funciona apenas com sistemas de coordenadas UTM.\n\n"
+            f"Sistema atual: {crs.description()}\n\n"
+            f"Por favor, altere o sistema de coordenadas do projeto para UTM."
+        )
+        return
+    
     tool = RumoDistanceTool(canvas, iface)
     canvas.setMapTool(tool)
     iface.messageBar().pushMessage(
