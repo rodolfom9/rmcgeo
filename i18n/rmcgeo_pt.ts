@@ -8,8 +8,8 @@
         <translation>RMCGEO</translation>
     </message>
     <message>
-        <source>Memorial Descritivo (In Development)</source>
-        <translation>Memorial Descritivo (Em Desenvolvimento)</translation>
+        <source>Memorial (In Development)</source>
+        <translation>Memorial (Em Desenvolvimento)</translation>
     </message>
     <message>
         <source>Applications</source>

@@ -39,6 +39,9 @@ from .modules.add_perimetro_tabela import run as run_add_perimetro_tabela
 from .modules.add_coord_x_tabela import run as run_add_coord_x_tabela
 from .modules.add_coord_y_tabela import run as run_add_coord_y_tabela
 from .modules.add_comprimento_tabela import run as run_add_comprimento_tabela
+#from .modules.extend_tool import run as run_extend_tool
+#from .modules.offset_tool import run as run_offset_tool
+#from .modules.chanfro_tool import run as run_chanfro_tool
 
 from .about import AboutDialog
 import os.path
@@ -83,26 +86,30 @@ class RMCGeo:
         self.plugin_menu = QMenu(self.tr("RMCGEO"), self.iface.mainWindow().menuBar())
         #self.plugin_menu.setIcon(QIcon(':/plugins/rmcgeo2/icon.png')) nao usar
         self.iface.mainWindow().menuBar().addMenu(self.plugin_menu)
-        
-        submenu1 = QMenu(self.tr("Memorial Descritivo (In Development)"), self.plugin_menu)
+
+        submenu1 = QMenu(self.tr("Memorial (In Development)"), self.plugin_menu)
         submenu1.setIcon(QIcon(':/images/themes/default/mActionShowPluginManager.svg'))
         self.plugin_menu.addMenu(submenu1)
+
+        self.plugin_menu.addSeparator()
 
         menu_aplicativos = QMenu(self.tr("Applications"), self.plugin_menu)
         menu_aplicativos.setIcon(QIcon(':/images/themes/default/mActionShowPluginManager.svg'))
         self.plugin_menu.addMenu(menu_aplicativos)
 
         #Desenho por Azimute e Distância
-        self.action_azimuth = QAction(QIcon(':/images/themes/default/mActionMeasure.svg'),
+        self.action_azimuth = QAction(QIcon(':/images/themes/default/mActionMeasureBearing.svg'),
         self.tr("Drawing by Azimuth and Distance"), self.iface.mainWindow())
         self.action_azimuth.triggered.connect(lambda: run_azimuth_distance(self.iface))
         menu_aplicativos.addAction(self.action_azimuth)
 
         #Desenho por Rumo e Distância
-        self.action_rumo = QAction(QIcon(':/images/themes/default/mActionMeasure.svg'),
+        self.action_rumo = QAction(QIcon(':/images/themes/default/mActionMeasureBearing.svg'),
         self.tr("Drawing by Rumo and Distance"), self.iface.mainWindow())
         self.action_rumo.triggered.connect(lambda: run_rumo_distance(self.iface))
         menu_aplicativos.addAction(self.action_rumo)
+
+        menu_aplicativos.addSeparator()
 
         #Conversor de Graus decimal para GMS
         self.action11 = QAction(QIcon(':/images/themes/default/mActionCalculateField.svg'),
@@ -113,6 +120,26 @@ class RMCGeo:
         menu_ferramentas = QMenu(self.tr("Tools"), self.plugin_menu)
         menu_ferramentas.setIcon(QIcon(':/images/themes/default/processingAlgorithm.svg'))
         self.plugin_menu.addMenu(menu_ferramentas)
+
+        # Ferramenta Extend
+        self.action_extend = QAction(QIcon(':/images/themes/default/mActionTrimExtendFeature.svg'),
+        self.tr("Extend Line"), self.iface.mainWindow())
+        self.action_extend.triggered.connect(lambda: run_extend_tool(self.iface))
+        menu_ferramentas.addAction(self.action_extend)
+
+        # Ferramenta Offset
+        self.action_offset = QAction(QIcon(':/images/themes/default/algorithms/mAlgorithmOffsetLines.svg'),
+        self.tr("Offset Line"), self.iface.mainWindow())
+        self.action_offset.triggered.connect(lambda: run_offset_tool(self.iface))
+        menu_ferramentas.addAction(self.action_offset)
+
+        # Ferramenta Chanfro
+        self.action_chanfro = QAction(QIcon(':/images/themes/default/algorithms/mAlgorithmBuffer.svg'),
+        self.tr("Chamfer Line"), self.iface.mainWindow())
+        self.action_chanfro.triggered.connect(lambda: run_chanfro_tool(self.iface))
+        menu_ferramentas.addAction(self.action_chanfro)
+
+        menu_ferramentas.addSeparator() 
 
         #Inserir Ponto
         self.point_insert = QAction(QIcon(':/images/themes/default/gpsicons/mActionAddTrackPoint.svg'),
@@ -172,8 +199,10 @@ class RMCGeo:
         self.action_add_comprimento.triggered.connect(lambda: run_add_comprimento_tabela(self.iface))
         menu_manipulador_tabela.addAction(self.action_add_comprimento)
 
+        self.plugin_menu.addSeparator()
+
         #Sobre o RMCGEO
-        self.menu_about = QAction(QIcon(':/images/themes/default/mActionHelpContents.svg'),
+        self.menu_about = QAction(QIcon(':/images/flags/pt_BR.svg'),
             self.tr("About RMCGEO"), self.iface.mainWindow())
         self.menu_about.triggered.connect(self.show_about)
         self.plugin_menu.addAction(self.menu_about)
