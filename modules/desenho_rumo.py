@@ -121,6 +121,12 @@ class RumoDistanceTool(BaseBearingTool):
                 return dms_str
         except ValueError:
             return dms_str
+    
+    def remove_dms_symbols(self, dms_str):
+        """Remove os símbolos de graus, minutos e segundos de uma string."""
+        # Remove °, ', "
+        clean_str = dms_str.replace('°', '').replace("'", '').replace('"', '').strip()
+        return clean_str
 
     def insert_values(self):
         """Insere os valores atuais na tabela."""
@@ -210,46 +216,102 @@ class RumoDistanceTool(BaseBearingTool):
             cell_text = table.item(row, column).text()
             
             if column == 0:  # Rumo
-                self.iface.messageBar().pushMessage(
-                    "Aviso", 
-                    "Para editar o rumo, remova esta linha e insira novamente com os valores corretos.",
-                    level=Qgis.Warning
-                )
-                
-                table.cellChanged.disconnect(self.ao_mudar_celula)
-                old_rumo = self.inserted_values[row][0].split()[0]  # Pega só a parte do rumo
-                table.setItem(row, column, QTableWidgetItem(old_rumo))
-                table.cellChanged.connect(self.ao_mudar_celula)
+                # Validar e atualizar o rumo
+                try:
+                    rumo_decimal = self.dms_to_decimal(cell_text)
+                    
+                    if rumo_decimal is None or rumo_decimal < 0 or rumo_decimal > 90:
+                        self.iface.messageBar().pushMessage(
+                            "Erro", 
+                            "Rumo inválido. O valor deve estar entre 0 e 90 graus.",
+                            level=Qgis.Warning
+                        )
+                        table.cellChanged.disconnect(self.ao_mudar_celula)
+                        old_rumo_full = self.inserted_values[row][0]
+                        old_rumo = ' '.join(old_rumo_full.split()[:-1])  # Remove o quadrante
+                        table.setItem(row, column, QTableWidgetItem(old_rumo))
+                        table.cellChanged.connect(self.ao_mudar_celula)
+                        return
+                    
+                    # Pegar o quadrante atual
+                    old_quadrant = self.inserted_values[row][0].split()[-1]
+                    
+                    # Recalcular azimute com novo rumo e quadrante existente
+                    new_azimuth = self.converter_rumo_azimute(rumo_decimal, old_quadrant)
+                    original_distance = self.inserted_values[row][2]
+                    
+                    # Formatar o rumo
+                    rumo_formatted_display = self.format_rumo_dms(cell_text)
+                    rumo_formatted = f"{rumo_formatted_display} {old_quadrant}"
+                    
+                    self.inserted_values[row] = (rumo_formatted, new_azimuth, original_distance)
+                    
+                    table.cellChanged.disconnect(self.ao_mudar_celula)
+                    table.setItem(row, column, QTableWidgetItem(rumo_formatted_display))
+                    table.cellChanged.connect(self.ao_mudar_celula)
+                    
+                    self.atualizar_preview()
+                    
+                except (ValueError, AttributeError):
+                    self.iface.messageBar().pushMessage(
+                        "Erro", 
+                        "Formato de rumo inválido. Use: '45' ou '45 30' ou '45 30 15'",
+                        level=Qgis.Warning
+                    )
+                    table.cellChanged.disconnect(self.ao_mudar_celula)
+                    old_rumo_full = self.inserted_values[row][0]
+                    old_rumo = ' '.join(old_rumo_full.split()[:-1])  # Remove o quadrante
+                    table.setItem(row, column, QTableWidgetItem(old_rumo))
+                    table.cellChanged.connect(self.ao_mudar_celula)
                 return
                 
-            elif column == 1:  # Quadrante (no meio)
+            elif column == 1:
+                new_quadrant = cell_text.strip().upper()
+                old_quadrant = self.inserted_values[row][0].split()[-1]
+                if new_quadrant == old_quadrant:
+                    return
+                
                 # Validar quadrante
                 valid_quadrants = ['NE', 'SE', 'SW', 'NW']
-                if cell_text.upper() not in valid_quadrants:
+                if new_quadrant not in valid_quadrants:
                     self.iface.messageBar().pushMessage(
                         "Erro", 
                         "Quadrante inválido. Use: NE, SE, SW ou NW",
                         level=Qgis.Warning
                     )
                     table.cellChanged.disconnect(self.ao_mudar_celula)
-                    old_quadrant = self.inserted_values[row][0].split()[-1]  # Pega o quadrante original
                     table.setItem(row, column, QTableWidgetItem(old_quadrant))
                     table.cellChanged.connect(self.ao_mudar_celula)
                     return
                 
                 # Atualizar o azimute baseado no novo quadrante
                 rumo_parts = self.inserted_values[row][0].split()
-                rumo_str = ' '.join(rumo_parts[:-1])  # Pega tudo menos o quadrante
-                rumo_decimal = self.dms_to_decimal(rumo_str)
-                new_azimuth = self.converter_rumo_azimute(rumo_decimal, cell_text.upper())
+                rumo_str_with_symbols = ' '.join(rumo_parts[:-1])  # Pega tudo menos o quadrante
+                
+                # Remover símbolos de °, ', " antes de processar
+                rumo_str_clean = self.remove_dms_symbols(rumo_str_with_symbols)
+                rumo_decimal = self.dms_to_decimal(rumo_str_clean)
+                
+                if rumo_decimal is None:
+                    return
+                
+                new_azimuth = self.converter_rumo_azimute(rumo_decimal, new_quadrant)
+                
+                if new_azimuth is None:
+                    return
                 
                 original_distance = self.inserted_values[row][2]
-                rumo_formatted = f"{rumo_str} {cell_text.upper()}"
+                rumo_formatted = f"{rumo_str_with_symbols} {new_quadrant}"
                 self.inserted_values[row] = (rumo_formatted, new_azimuth, original_distance)
                 
+                # Atualizar a célula sem disparar o evento
                 table.cellChanged.disconnect(self.ao_mudar_celula)
-                table.setItem(row, column, QTableWidgetItem(cell_text.upper()))
+                table.setItem(row, column, QTableWidgetItem(new_quadrant))
                 table.cellChanged.connect(self.ao_mudar_celula)
+                
+                # Atualizar preview
+                self.atualizar_preview()
+                return
                 
             elif column == 2:  # Distância
                 clean_text = cell_text.replace('m', '').strip()
