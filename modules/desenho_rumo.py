@@ -179,8 +179,6 @@ class RumoDistanceTool(BaseBearingTool):
             cell_text = table.item(row, column).text()
             
             if column == 0:  # Rumo
-                # Para simplificar, vamos apenas restaurar o valor original
-                # A edição de rumo é complexa porque envolve o quadrante
                 self.iface.messageBar().pushMessage(
                     "Aviso", 
                     "Para editar o rumo, remova esta linha e insira novamente com os valores corretos.",

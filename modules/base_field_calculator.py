@@ -71,19 +71,14 @@ class BaseCalculadoraTabela(QDialog, FORM_CLASS):
         self.select_camada.setText("Selecione a Camada:")
         self.status_label.setText("Status: Aguardando seleção")
         
-        # Configura o combo de formatação
         self.configurar_formatacao_combo()
         
-        # Preenche o combo box com as camadas
         self.popular_camadas()
         
-        # Conecta o botão salvar
         self.salvarButton.clicked.connect(self.add_campo)
-        
-        # Conecta a mudança de camada
+
         self.coluna_combo.currentIndexChanged.connect(self.ao_mudar_camada)
-        
-        # Conecta a mudança de formato
+ 
         self.formatacao_combo.currentIndexChanged.connect(self.ao_mudar_formato)
     
     def configurar_formatacao_combo(self):
@@ -103,7 +98,6 @@ class BaseCalculadoraTabela(QDialog, FORM_CLASS):
         if self.format_options:
             selected_format = self.formatacao_combo.currentText()
             
-            # Atualiza o nome do campo se houver mapeamento definido
             if self.field_names_by_format and selected_format in self.field_names_by_format:
                 self.field_name = self.field_names_by_format[selected_format]
             
@@ -135,7 +129,6 @@ class BaseCalculadoraTabela(QDialog, FORM_CLASS):
                 if layer.geometryType() in self.geometry_types:
                     compatible_layers.append(layer)
             else:
-                # Aceita todas as camadas vetoriais
                 compatible_layers.append(layer)
         
         if not compatible_layers:

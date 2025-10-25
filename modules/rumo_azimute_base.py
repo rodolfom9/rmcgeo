@@ -73,15 +73,12 @@ class BaseBearingTool(QgsMapTool):
                 # Apenas graus
                 decimal = float(parts[0])
             elif len(parts) == 2:
-                # Graus e minutos
                 degrees = float(parts[0])
                 minutes = float(parts[1])
                 decimal = degrees + (minutes / 60.0)
             elif len(parts) == 3:
-                # Graus, minutos e segundos com decimais (limitado a 2 casas)
                 degrees = float(parts[0])
                 minutes = float(parts[1])
-                # Limitar segundos a 2 casas decimais
                 seconds = float(f"{float(parts[2]):.2f}")
                 decimal = degrees + (minutes / 60.0) + (seconds / 3600.0)
             else:
@@ -98,11 +95,9 @@ class BaseBearingTool(QgsMapTool):
             # Converter azimute para radianos e ajustar para o norte
             azimuth_rad = math.radians(90 - azimuth)
             
-            # Calcular as coordenadas do ponto final em UTM
             dx = distance * math.cos(azimuth_rad)
             dy = distance * math.sin(azimuth_rad)
-            
-            # Criar ponto final em UTM
+
             end_point = QgsPointXY(
                 start_point.x() + dx,
                 start_point.y() + dy
@@ -125,9 +120,8 @@ class BaseBearingTool(QgsMapTool):
         
         # Desenhar linhas já inseridas
         for value_tuple in self.inserted_values:
-            # Extrai azimute e distância (independente do tamanho da tupla)
-            az = value_tuple[-2]  # Penúltimo elemento (azimute)
-            dist = value_tuple[-1]  # Último elemento (distância)
+            az = value_tuple[-2]
+            dist = value_tuple[-1]
             end_point = self.calculate_end_point(current_point, az, dist)
             points.append(end_point)
             current_point = end_point
@@ -250,7 +244,6 @@ class BaseBearingTool(QgsMapTool):
                 continue
 
         if features_added > 0:
-            # Atualizar a extensão da camada
             layer.updateExtents()
             
             self.iface.messageBar().pushMessage(
@@ -267,7 +260,6 @@ class BaseBearingTool(QgsMapTool):
                 duration=3
             )
 
-        # Limpar e fechar
         if self.rubber_band:
             self.rubber_band.reset()
         if self.dlg:
@@ -276,7 +268,6 @@ class BaseBearingTool(QgsMapTool):
 
     def canvasPressEvent(self, event):
         """Captura o clique no mapa."""
-        # Verificar se há uma camada selecionada e se está em modo de edição
         layer = self.canvas.currentLayer()
         if layer and not layer.isEditable():
             self.iface.messageBar().pushMessage(
@@ -287,11 +278,9 @@ class BaseBearingTool(QgsMapTool):
             return
             
         if not self.dlg or not self.dlg.isVisible():
-            # Primeiro clique - pegar ponto inicial e mostrar diálogo
             self.start_point = self.toMapCoordinates(event.pos())
             self.show_dialog()
         else:
-            # Cliques subsequentes - atualizar ponto inicial
             self.start_point = self.toMapCoordinates(event.pos())
             self.atualizar_preview()
 
@@ -304,13 +293,11 @@ class BaseBearingTool(QgsMapTool):
             right_button = Qt.RightButton  # Qt5
         
         if event.button() == right_button:
-            # Fechar o diálogo se estiver aberto
             if self.dlg and self.dlg.isVisible():
                 self.dlg.close()
-            # Limpar o rubber band
             if self.rubber_band:
                 self.rubber_band.reset()
-            self.canvas.unsetMapTool(self) # Desativar a ferramenta
+            self.canvas.unsetMapTool(self)
 
     def deactivate(self):
         """Limpa recursos ao desativar a ferramenta."""

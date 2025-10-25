@@ -141,7 +141,7 @@ class AzimuthDistanceTool(BaseBearingTool):
                 
             cell_text = table.item(row, column).text()
             
-            if column == 0:  # Azimute
+            if column == 0:
                 # Remove símbolo de grau, minuto e segundo se existir
                 clean_text = cell_text.replace('°', ' ').replace("'", ' ').replace('"', ' ')
                 clean_text = ' '.join(clean_text.split())

@@ -8,12 +8,13 @@ qgisMinimumVersion=3.16
 qgisMaximumVersion=4.99
 supportsQt6=True
 description=Set of tools to simplify cartography tasks
-version=1.6.4
+version=1.7.0
 author=Rodolfo Martins de Carvalho
 email=rodolfomartins09@gmail.com
 
-about=RMCGEO is a comprehensive set of geospatial tools that includes: coordinate conversion, drawing by azimuth and distance, drawing by bearing and distance, insertion of points by coordinates, copying coordinates and tools for manipulating attribute tables.
-    Português: RMCGEO é um conjunto abrangente de ferramentas geoespaciais que inclui: conversão de coordenadas, desenho por azimute e distância, desenho por rumo e distância, inserção de pontos por coordenadas, cópia de coordenadas e ferramentas para manipulação de tabelas de atributos.
+about=EN:RMCGEO is a comprehensive set of geospatial tools that includes: coordinate conversion, drawing by azimuth and distance, drawing by bearing and distance, insertion of points by coordinates, copying coordinates and tools for manipulating attribute tables.
+    
+    PT: RMCGEO é um conjunto abrangente de ferramentas geoespaciais que inclui: conversão de coordenadas, desenho por azimute e distância, desenho por rumo e distância, inserção de pontos por coordenadas, cópia de coordenadas e ferramentas para manipulação de tabelas de atributos.
 
 
 tracker=https://github.com/rodolfom9/rmcgeo/issues
@@ -25,16 +26,27 @@ repository=https://github.com/rodolfom9/rmcgeo
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 changelog=
-    *1.6.4 - Adicionado Suporte com Qt6
-    *1.5.6 - Adicionado Manipulador de Tabelas
-    *1.4.0 - Adicionado Modulo de desenho por rumo e azimute
-    *1.3.1 - Adicionado Modulo Copiar coordenada de ponto
-    *1.2.0 - Adicionado Modulo Adicionar ponto por coordenada
-    *1.1.0 - Adicionado Modulo Street View
-    *1.0.0 - Versão funcional sem módulos
+    Version 1.7.0
+    - Adicionado 
+    Version 1.6.7
+    - Corrigido Bug nas ferramentas Azimute e Rumo
+    Version 1.6.4
+    - Adicionado Suporte ao QGIS4 com QT6
+    Version 1.5.6
+    - Adicionado Manipulador de Tabelas
+    Version 1.4.0
+    - Adicionado Ferramenta de desenho por rumo e azimute
+    Version 1.3.1
+    - Adicionado Ferramenta de Copiar coordenada de ponto
+    Version 1.2.0
+    - Adicionado Ferramenta de Adicionar ponto por coordenada
+    Version 1.1.0
+    - Adicionado Ferramenta Street View
+    Version 1.0.0
+    - Versão funcional sem módulos
 
 # Tags are comma separated with spaces allowed
-tags=python, coordinates, memorial, azimuth, distance, azimute, distancia, rumo, desenho, brasil, cad, incra, ibge, matricula, coordenadas
+tags=python, coordinates, memorial, azimuth, distance, azimute, distancia, rumo, desenho, brasil, cad, incra, ibge, matricula, coordenadas, chanfer, offset, extend, trim
 
 homepage=https://rmcgeo.com.br/
 category=Plugins
