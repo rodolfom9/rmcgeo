@@ -21,7 +21,7 @@
 """
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtWidgets import QDialog
+from qgis.PyQt.QtWidgets import QDialog, QTextBrowser, QVBoxLayout
 from qgis.PyQt.QtGui import QPixmap, QIcon
 from qgis.PyQt.QtCore import QSize
 
@@ -62,6 +62,25 @@ class AboutDialog(QDialog, FORM_CLASS):
             self.license.setHtml(license_text)
         except Exception as e:
             self.license.setPlainText("Erro ao carregar arquivo da licença.")
+
+        # Carrega o arquivo de ferramentas
+        tools_path = os.path.join(os.path.dirname(__file__), 'utils', 'tools.html')
+        try:
+            with open(tools_path, 'r', encoding='utf-8') as f:
+                tools_text = f.read()
+            # Cria um QTextBrowser para a aba de ferramentas
+            tools_browser = QTextBrowser()
+            tools_browser.setReadOnly(True)
+            tools_browser.setHtml(tools_text)
+            tools_browser.setTextInteractionFlags(tools_browser.textInteractionFlags() | 0x00000001)
+            
+            # Adiciona ao layout da aba tools_tab
+            layout = QVBoxLayout()
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.addWidget(tools_browser)
+            self.tools_tab.setLayout(layout)
+        except Exception as e:
+            print(f"Erro ao carregar arquivo de ferramentas: {e}")
     
     def carregar_icon(self):
         """Carrega o ícone SVG no QLabel"""
