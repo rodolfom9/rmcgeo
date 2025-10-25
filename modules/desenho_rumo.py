@@ -24,7 +24,7 @@ from .rumo_azimute_base import BaseBearingTool
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import QSize
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QTableWidgetItem, QMessageBox
+from qgis.PyQt.QtWidgets import QTableWidgetItem, QMessageBox, QHeaderView, QAbstractItemView
 from qgis.core import Qgis
 import os
 
@@ -39,6 +39,35 @@ class RumoDistanceTool(BaseBearingTool):
     def get_nome_camada(self):
         """Retorna o nome da camada."""
         return "Linhas_Rumo"
+
+    def setup_table(self):
+        """Configura a tabela com 3 colunas para rumo, quadrante e distância."""
+        table = self.dlg.coordenadasTable
+        header = table.horizontalHeader()
+        # Compatibilidade Qt5/Qt6:
+        try:
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)  # Qt6
+        except AttributeError:
+            header.setSectionResizeMode(QHeaderView.Interactive)  # Qt5
+        
+        table.setColumnCount(3)
+        
+        # Define largura fixa das colunas (para 370px disponíveis)
+        table.setColumnWidth(0, 140)  # Rumo
+        table.setColumnWidth(1, 100)  # Quadrante
+        table.setColumnWidth(2, 126)  # Distância
+        
+        # Compatibilidade Qt5/Qt6:
+        try:
+            # Qt6
+            table.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked | 
+                                 QAbstractItemView.EditTrigger.EditKeyPressed)
+        except AttributeError:
+            # Qt5
+            table.setEditTriggers(QAbstractItemView.DoubleClicked | 
+                             QAbstractItemView.EditKeyPressed)
+        
+        table.cellChanged.connect(self.ao_mudar_celula)
 
     def show_dialog(self):
         """Mostra o diálogo para entrada de rumo e distância."""
@@ -150,8 +179,10 @@ class RumoDistanceTool(BaseBearingTool):
             table.insertRow(row)
             
             # Mostrar o valor formatado na tabela
-            table.setItem(row, 0, QTableWidgetItem(rumo_formatted))
-            table.setItem(row, 1, QTableWidgetItem(f"{distance:.2f}m"))
+            rumo_only = self.format_rumo_dms(rumo_dms)
+            table.setItem(row, 0, QTableWidgetItem(rumo_only))
+            table.setItem(row, 1, QTableWidgetItem(quadrante))
+            table.setItem(row, 2, QTableWidgetItem(f"{distance:.2f}m"))
             
             # Reconectar o sinal após inserir os itens
             table.cellChanged.connect(self.ao_mudar_celula)
@@ -186,12 +217,41 @@ class RumoDistanceTool(BaseBearingTool):
                 )
                 
                 table.cellChanged.disconnect(self.ao_mudar_celula)
-                old_rumo = self.inserted_values[row][0]
+                old_rumo = self.inserted_values[row][0].split()[0]  # Pega só a parte do rumo
                 table.setItem(row, column, QTableWidgetItem(old_rumo))
                 table.cellChanged.connect(self.ao_mudar_celula)
                 return
                 
-            elif column == 1:  # Distância
+            elif column == 1:  # Quadrante (no meio)
+                # Validar quadrante
+                valid_quadrants = ['NE', 'SE', 'SW', 'NW']
+                if cell_text.upper() not in valid_quadrants:
+                    self.iface.messageBar().pushMessage(
+                        "Erro", 
+                        "Quadrante inválido. Use: NE, SE, SW ou NW",
+                        level=Qgis.Warning
+                    )
+                    table.cellChanged.disconnect(self.ao_mudar_celula)
+                    old_quadrant = self.inserted_values[row][0].split()[-1]  # Pega o quadrante original
+                    table.setItem(row, column, QTableWidgetItem(old_quadrant))
+                    table.cellChanged.connect(self.ao_mudar_celula)
+                    return
+                
+                # Atualizar o azimute baseado no novo quadrante
+                rumo_parts = self.inserted_values[row][0].split()
+                rumo_str = ' '.join(rumo_parts[:-1])  # Pega tudo menos o quadrante
+                rumo_decimal = self.dms_to_decimal(rumo_str)
+                new_azimuth = self.converter_rumo_azimute(rumo_decimal, cell_text.upper())
+                
+                original_distance = self.inserted_values[row][2]
+                rumo_formatted = f"{rumo_str} {cell_text.upper()}"
+                self.inserted_values[row] = (rumo_formatted, new_azimuth, original_distance)
+                
+                table.cellChanged.disconnect(self.ao_mudar_celula)
+                table.setItem(row, column, QTableWidgetItem(cell_text.upper()))
+                table.cellChanged.connect(self.ao_mudar_celula)
+                
+            elif column == 2:  # Distância
                 clean_text = cell_text.replace('m', '').strip()
                 
                 try:

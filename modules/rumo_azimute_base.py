@@ -135,29 +135,6 @@ class BaseBearingTool(QgsMapTool):
             self.rubber_band.setToGeometry(
                 QgsGeometry.fromPolylineXY(points), None)
 
-    def setup_table(self):
-        """Configura a tabela de coordenadas."""
-        table = self.dlg.coordenadasTable
-        header = table.horizontalHeader()
-        # Compatibilidade Qt5/Qt6:
-        try:
-            header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)  # Qt6
-        except AttributeError:
-            header.setSectionResizeMode(QHeaderView.Stretch)  # Qt5
-        table.setColumnCount(2)
-        
-        # Compatibilidade Qt5/Qt6:
-        try:
-            # Qt6
-            table.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked | 
-                                 QAbstractItemView.EditTrigger.EditKeyPressed)
-        except AttributeError:
-            # Qt5
-            table.setEditTriggers(QAbstractItemView.DoubleClicked | 
-                             QAbstractItemView.EditKeyPressed)
-        
-        table.cellChanged.connect(self.ao_mudar_celula)
-
     def undo_last_insert(self):
         """Remove o último valor inserido."""
         if self.inserted_values:

@@ -109,14 +109,14 @@
        </item>
        <item>
         <widget class="QComboBox" name="quadranteCombo">
-         <property name="toolTip">
-          <string>Selecione o quadrante</string>
-         </property>
          <property name="minimumSize">
           <size>
            <width>80</width>
            <height>0</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Selecione o quadrante</string>
          </property>
          <item>
           <property name="text">
@@ -189,16 +189,30 @@
       <bool>true</bool>
      </property>
      <property name="columnCount">
-      <number>2</number>
+      <number>3</number>
      </property>
      <column>
       <property name="text">
        <string>Rumo</string>
       </property>
+      <property name="width">
+       <number>140</number>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Quadrante</string>
+      </property>
+      <property name="width">
+       <number>100</number>
+      </property>
      </column>
      <column>
       <property name="text">
        <string>Distância</string>
+      </property>
+      <property name="width">
+       <number>126</number>
       </property>
      </column>
     </widget>

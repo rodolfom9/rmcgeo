@@ -24,7 +24,7 @@ from .rumo_azimute_base import BaseBearingTool
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import QSize
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QTableWidgetItem, QMessageBox
+from qgis.PyQt.QtWidgets import QTableWidgetItem, QMessageBox, QHeaderView, QAbstractItemView
 from qgis.core import Qgis
 import os
 
@@ -39,6 +39,30 @@ class AzimuthDistanceTool(BaseBearingTool):
     def get_nome_camada(self):
         """Retorna o nome da camada."""
         return "Linhas_Azimute"
+
+    def setup_table(self):
+        """Configura a tabela com 2 colunas para azimute e distância."""
+        table = self.dlg.coordenadasTable
+        header = table.horizontalHeader()
+        # Compatibilidade Qt5/Qt6:
+        try:
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)  # Qt6
+        except AttributeError:
+            header.setSectionResizeMode(QHeaderView.Stretch)  # Qt5
+        
+        table.setColumnCount(2)
+        
+        # Compatibilidade Qt5/Qt6:
+        try:
+            # Qt6
+            table.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked | 
+                                 QAbstractItemView.EditTrigger.EditKeyPressed)
+        except AttributeError:
+            # Qt5
+            table.setEditTriggers(QAbstractItemView.DoubleClicked | 
+                             QAbstractItemView.EditKeyPressed)
+        
+        table.cellChanged.connect(self.ao_mudar_celula)
 
     def show_dialog(self):
         """Mostra o diálogo para entrada de azimute e distância."""
