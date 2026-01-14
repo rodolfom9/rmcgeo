@@ -1,7 +1,23 @@
 """
-Módulo de Links Úteis
-Gerencia e abre links úteis para topografia e georreferenciamento.
-Os links são armazenados diretamente neste arquivo Python.
+/***************************************************************************
+ RMCGeo
+                                 A QGIS plugin
+ Conjunto de ferramentas para simplificar tarefas geoespaciais.
+                             -------------------
+        begin                : 2025-11-25
+        copyright            : (C) 2025 by Rodolfo Martins de Carvalho
+        email                : rodolfomartins09@gmail.com
+        git sha              : $Format:%H$
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 """
 
 import webbrowser

@@ -42,6 +42,7 @@ from .modules.add_comprimento_tabela import run as run_add_comprimento_tabela
 from .modules.extend_tool import run as run_extend_tool
 from .modules.offset_tool import run as run_offset_tool
 from .modules.chanfro_tool import run as run_chanfro_tool
+from .modules.project_norms import run as run_project_norms
 from .modules.links_uteis import LinksUteisManager
 
 from .about import AboutDialog
@@ -117,6 +118,12 @@ class RMCGeo:
         self.tr("Decimal to GMS Converter"), self.iface.mainWindow())
         self.action11.triggered.connect(lambda: run_gms_decimal(self.iface))
         menu_aplicativos.addAction(self.action11)
+
+        # Normas de Projeto (Específico Goiânia)
+        self.action_norms = QAction(QIcon(':/images/themes/default/mActionLabeling.svg'),
+        "Análise de Normas (Goiânia)", self.iface.mainWindow())
+        self.action_norms.triggered.connect(lambda: run_project_norms(self.iface))
+        menu_aplicativos.addAction(self.action_norms)
 
         menu_ferramentas = QMenu(self.tr("Tools"), self.plugin_menu)
         menu_ferramentas.setIcon(QIcon(':/images/themes/default/processingAlgorithm.svg'))
