@@ -8,7 +8,7 @@ qgisMinimumVersion=3.16
 qgisMaximumVersion=4.99
 supportsQt6=True
 description=Geospatial toolkit with drawing tools (azimuth, bearing, offset, extend, chamfer), coordinate operations, and attribute table calculators.
-version=1.7.2
+version=1.8.1
 author=Rodolfo Martins de Carvalho
 email=rodolfomartins09@gmail.com
 
@@ -26,6 +26,8 @@ repository=https://github.com/rodolfom9/rmcgeo
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 changelog=
+    Version 1.8.1
+    - Add Userful Links and Bug Fixes
     Version 1.7.2
     - Updated Bearing (rumo) tool
     Version 1.7.0

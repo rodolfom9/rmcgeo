@@ -65,6 +65,21 @@ class ExtendTool(QgsMapTool):
             QgsWkbTypes.LineGeometry, QColor(0, 150, 255, 150), 2
         )
     
+    def activate(self):
+        super().activate()
+        # Verifica se a camada ativa é uma camada de linha
+        active_layer = self.iface.activeLayer()
+        if not active_layer or active_layer.type() != QgsMapLayerType.VectorLayer or \
+           active_layer.geometryType() != QgsWkbTypes.LineGeometry:
+            QMessageBox.warning(
+                self.iface.mainWindow(),
+                "Camada Inválida",
+                "Por favor, selecione uma camada de linhas para trabalhar com a ferramenta Extend."
+            )
+            # Desativa a ferramenta se a camada não for adequada
+            self.canvas.unsetMapTool(self)
+            return
+        
     def canvasMoveEvent(self, event):
         point = self.toMapCoordinates(event.pos())
         self.mouse_position = point
@@ -461,9 +476,15 @@ class ExtendTool(QgsMapTool):
         return closest_feature, closest_layer, closest_geom
     
     def update_hover_highlight(self, point):
-        """Atualiza o highlight visual da linha sob o mouse."""
+        # Busca a linha mais próxima apenas na camada ativa
+        active_layer = self.iface.activeLayer()
         
-        feature, layer, geom = self.find_closest_line_at_point(point)
+        if not active_layer or active_layer.type() != QgsMapLayerType.VectorLayer or \
+           active_layer.geometryType() != QgsWkbTypes.LineGeometry:
+            self.clear_hover_highlight()
+            return
+            
+        feature, layer, geom = self.find_closest_line_at_point(point, active_layer)
         
         if feature and geom:
             geom_in_canvas_crs = self.transform_geometry_to_canvas_crs(geom, layer)

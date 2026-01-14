@@ -42,6 +42,7 @@ from .modules.add_comprimento_tabela import run as run_add_comprimento_tabela
 from .modules.extend_tool import run as run_extend_tool
 from .modules.offset_tool import run as run_offset_tool
 from .modules.chanfro_tool import run as run_chanfro_tool
+from .modules.links_uteis import LinksUteisManager
 
 from .about import AboutDialog
 import os.path
@@ -143,7 +144,7 @@ class RMCGeo:
 
         #Inserir Ponto
         self.point_insert = QAction(QIcon(':/images/themes/default/gpsicons/mActionAddTrackPoint.svg'),
-        "Inserir Ponto (X,Y)", self.iface.mainWindow())
+        self.tr("Insert Point (X,Y)"), self.iface.mainWindow())
         self.point_insert.triggered.connect(lambda: run_point_insert(self.iface))
         menu_ferramentas.addAction(self.point_insert)
 
@@ -155,7 +156,7 @@ class RMCGeo:
 
         #Street View pelo Navegador Padrao
         self.action_street_view = QAction(QIcon(':/images/themes/default/mIconWms.svg'),
-        "Street View", self.iface.mainWindow())
+        self.tr("Street View"), self.iface.mainWindow())
         self.action_street_view.triggered.connect(lambda: run_street_view(self.iface))
         menu_ferramentas.addAction(self.action_street_view)
 
@@ -198,6 +199,16 @@ class RMCGeo:
         self.tr("Add Length to Table"), self.iface.mainWindow())
         self.action_add_comprimento.triggered.connect(lambda: run_add_comprimento_tabela(self.iface))
         menu_manipulador_tabela.addAction(self.action_add_comprimento)
+
+        # Menu Links Úteis
+        menu_links_uteis = QMenu(self.tr("Useful Links"), self.plugin_menu)
+        menu_links_uteis.setIcon(QIcon(':/images/themes/default/mIconWms.svg'))
+        self.plugin_menu.addMenu(menu_links_uteis)
+        
+        # Inicializar gerenciador de links (sem precisar passar plugin_dir)
+        self.links_manager = LinksUteisManager()
+        # Criar ações de links dinamicamente
+        self.links_actions = self.links_manager.create_menu_actions(menu_links_uteis, self.iface)
 
         self.plugin_menu.addSeparator()
 

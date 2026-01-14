@@ -140,6 +140,20 @@ class OffsetTool(QgsMapTool):
     
     def activate(self):
         super().activate()
+        
+        # Verifica se a camada ativa é uma camada de linha
+        active_layer = self.iface.activeLayer()
+        if not active_layer or active_layer.type() != QgsMapLayerType.VectorLayer or \
+           active_layer.geometryType() != QgsWkbTypes.LineGeometry:
+            QMessageBox.warning(
+                self.iface.mainWindow(),
+                "Camada Inválida",
+                "Por favor, selecione uma camada de linhas para trabalhar com o Offset."
+            )
+            # Desativa a ferramenta se a camada não for adequada
+            self.canvas.unsetMapTool(self)
+            return
+
         self.get_offset_distance()
     
     def get_offset_distance(self):
@@ -257,8 +271,13 @@ class OffsetTool(QgsMapTool):
             if not offset_geom or offset_geom.isEmpty():
                 return
             
+            # Copia os atributos da feição original (exceto o ID/FID para autogeração)
             attributes = {}
-            for field in self.selected_layer.fields():
+            pk_indices = self.selected_layer.primaryKeyAttributes()
+            for i, field in enumerate(self.selected_layer.fields()):
+                # Pula campos que são chaves primárias ou se chamam 'fid'/'id'
+                if i in pk_indices or field.name().lower() in ['fid', 'id']:
+                    continue
                 field_name = field.name()
                 attributes[field_name] = self.selected_feature[field_name]
             
@@ -405,7 +424,17 @@ class OffsetTool(QgsMapTool):
     
     def update_hover_highlight(self, point):
         """Atualiza o highlight visual da linha sob o mouse."""
-        feature, layer, geom = self.find_closest_line_at_point(point)
+        # Busca a linha mais próxima apenas na camada ativa selecionada pelo usuário
+        active_layer = self.iface.activeLayer()
+        
+        # Se não houver camada ativa ou não for uma camada de vetor de linha, limpa e retorna
+        if not active_layer or active_layer.type() != QgsMapLayerType.VectorLayer or \
+           active_layer.geometryType() != QgsWkbTypes.LineGeometry:
+            self.clear_hover_highlight()
+            return
+
+        # Busca a feição mais próxima apenas na camada ativa
+        feature, layer, geom = self.find_closest_line_at_point(point, active_layer)
         
         if feature and geom:
             geom_in_canvas_crs = self.transform_geometry_to_canvas_crs(geom, layer)

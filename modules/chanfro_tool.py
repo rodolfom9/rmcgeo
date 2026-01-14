@@ -69,6 +69,21 @@ class ChanfroTool(QgsMapTool):
         self.intersection_rubber_band = self.create_rubber_band(
             QgsWkbTypes.PointGeometry, QColor(255, 0, 0, 200), 5
         )
+
+    def activate(self):
+        super().activate()
+        # Verifica se a camada ativa é uma camada de linha
+        active_layer = self.iface.activeLayer()
+        if not active_layer or active_layer.type() != QgsMapLayerType.VectorLayer or \
+           active_layer.geometryType() != QgsWkbTypes.LineGeometry:
+            QMessageBox.warning(
+                self.iface.mainWindow(),
+                "Camada Inválida",
+                "Por favor, selecione uma camada de linhas para trabalhar com a ferramenta Chanfro."
+            )
+            # Desativa a ferramenta se a camada não for adequada
+            self.canvas.unsetMapTool(self)
+            return
         
     def canvasMoveEvent(self, event):
         point = self.toMapCoordinates(event.pos())
@@ -469,7 +484,7 @@ class ChanfroTool(QgsMapTool):
     
     def get_active_layer(self):
         """Obtém a camada ativa do projeto."""
-        layer = self.canvas.currentLayer()
+        layer = self.iface.activeLayer()
         if layer and isinstance(layer, QgsVectorLayer):
             return layer
         return None
@@ -591,8 +606,15 @@ class ChanfroTool(QgsMapTool):
     
     def update_hover_highlight(self, point):
         """Atualiza o highlight visual da linha sob o mouse."""
-        # Busca a linha mais próxima
-        feature, layer, geom = self.find_closest_line_at_point(point)
+        # Busca a linha mais próxima apenas na camada ativa
+        active_layer = self.iface.activeLayer()
+        
+        if not active_layer or active_layer.type() != QgsMapLayerType.VectorLayer or \
+           active_layer.geometryType() != QgsWkbTypes.LineGeometry:
+            self.clear_hover_highlight()
+            return
+            
+        feature, layer, geom = self.find_closest_line_at_point(point, active_layer)
         
         if feature and geom:
             geom_in_canvas_crs = self.transform_geometry_to_canvas_crs(geom, layer)

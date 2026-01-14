@@ -67,5 +67,25 @@
         <source>Add Length to Table</source>
         <translation>Adicionar Comprimento na Tabela</translation>
     </message>
+    <message>
+        <source>Chamfer Line</source>
+        <translation>Chanfrar Linha</translation>
+    </message>
+    <message>
+        <source>Useful Links</source>
+        <translation>Links Úteis</translation>
+    </message>
+    <message>
+        <source>Insert Point (X,Y)</source>
+        <translation>Inserir Ponto (X,Y)</translation>
+    </message>
+    <message>
+        <source>Street View</source>
+        <translation>Street View</translation>
+    </message>
+    <message>
+        <source>No links configured</source>
+        <translation>Nenhum link configurado</translation>
+    </message>
 </context>
 </TS>
