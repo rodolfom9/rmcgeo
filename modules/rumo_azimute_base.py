@@ -32,7 +32,7 @@ import math
 
 class BaseBearingTool(QgsMapTool):
     """Classe base para ferramentas de azimute e rumo."""
-    
+
     def __init__(self, canvas, iface):
         super().__init__(canvas)
         self.canvas = canvas
@@ -45,9 +45,9 @@ class BaseBearingTool(QgsMapTool):
             self.setCursor(Qt.CursorShape.CrossCursor)  # Qt6
         except AttributeError:
             self.setCursor(Qt.CrossCursor)  # Qt5
-        
+
         self.inserted_values = [] # Lista para armazenar os valores inseridos
-        
+
         # Criar rubber band para preview
         self.rubber_band = QgsRubberBand(self.canvas, QgsWkbTypes.LineGeometry)
         self.rubber_band.setColor(QColor(255, 0, 0))
@@ -56,12 +56,12 @@ class BaseBearingTool(QgsMapTool):
     def create_memory_layer(self, layer_name="Linhas"):
         """Cria uma camada temporária em UTM SIRGAS 2000 / UTM zone 22S."""
         layer = QgsVectorLayer(f"LineString?crs=EPSG:31982", layer_name, "memory")
-        
+
         if not layer.isValid():
             self.iface.messageBar().pushMessage(
                 "Erro", "Não foi possível criar a camada em UTM", level=Qgis.Critical)
             return None
-            
+
         QgsProject.instance().addMapLayer(layer)
         return layer
 
@@ -83,9 +83,9 @@ class BaseBearingTool(QgsMapTool):
                 decimal = degrees + (minutes / 60.0) + (seconds / 3600.0)
             else:
                 return None
-                
+
             return decimal
-            
+
         except ValueError:
             return None
 
@@ -94,7 +94,7 @@ class BaseBearingTool(QgsMapTool):
         try:
             # Converter azimute para radianos e ajustar para o norte
             azimuth_rad = math.radians(90 - azimuth)
-            
+
             dx = distance * math.cos(azimuth_rad)
             dy = distance * math.sin(azimuth_rad)
 
@@ -102,9 +102,9 @@ class BaseBearingTool(QgsMapTool):
                 start_point.x() + dx,
                 start_point.y() + dy
             )
-            
+
             return end_point
-            
+
         except Exception as e:
             print(f"DEBUG: ERRO ao calcular ponto final: {str(e)}")
             return start_point
@@ -113,11 +113,11 @@ class BaseBearingTool(QgsMapTool):
         """Mostra preview da linha usando rubber band."""
         if not self.rubber_band:
             return
-            
+
         self.rubber_band.reset()
         current_point = start_point
         points = [current_point]
-        
+
         # Desenhar linhas já inseridas
         for value_tuple in self.inserted_values:
             az = value_tuple[-2]
@@ -125,12 +125,12 @@ class BaseBearingTool(QgsMapTool):
             end_point = self.calculate_end_point(current_point, az, dist)
             points.append(end_point)
             current_point = end_point
-        
+
         # Desenhar linha atual
         if azimuth is not None and distance is not None:
             end_point = self.calculate_end_point(current_point, azimuth, distance)
             points.append(end_point)
-        
+
         if len(points) > 1:
             self.rubber_band.setToGeometry(
                 QgsGeometry.fromPolylineXY(points), None)
@@ -140,15 +140,15 @@ class BaseBearingTool(QgsMapTool):
         if self.inserted_values:
             self.inserted_values.pop()
             table = self.dlg.coordenadasTable
-            
+
             # Desconectar o sinal para evitar problemas ao remover linha
             table.cellChanged.disconnect(self.ao_mudar_celula)
-            
+
             table.removeRow(table.rowCount() - 1)
-            
+
             # Reconectar o sinal após remover a linha
             table.cellChanged.connect(self.ao_mudar_celula)
-            
+
             self.atualizar_preview()
 
     def save_and_close(self):
@@ -198,31 +198,31 @@ class BaseBearingTool(QgsMapTool):
                 # Extrai azimute e distância (independente do tamanho da tupla)
                 azimuth = value_tuple[-2]
                 distance = value_tuple[-1]
-                
+
                 end_point = self.calculate_end_point(current_point, azimuth, distance)
-                
+
                 # Criar a geometria da linha
                 line = QgsGeometry.fromPolylineXY([current_point, end_point])
                 if not line.isGeosValid():
                     continue
-                
+
                 # Criar e adicionar a feature
                 feat = QgsFeature(layer.fields())
                 feat.setGeometry(line)
-                
+
                 # Tentar adicionar a feature
                 if layer.addFeature(feat):
                     features_added += 1
-                
+
                 current_point = end_point
-                
+
             except Exception as e:
                 print(f"DEBUG: ERRO ao processar linha {i+1}: {str(e)}")
                 continue
 
         if features_added > 0:
             layer.updateExtents()
-            
+
             self.iface.messageBar().pushMessage(
                 "Sucesso",
                 f"Foram adicionadas {features_added} linhas em UTM! A camada permanece em modo de edição.",
@@ -253,7 +253,7 @@ class BaseBearingTool(QgsMapTool):
                 level=Qgis.Warning
             )
             return
-            
+
         if not self.dlg or not self.dlg.isVisible():
             self.start_point = self.toMapCoordinates(event.pos())
             self.show_dialog()
@@ -268,7 +268,7 @@ class BaseBearingTool(QgsMapTool):
             right_button = Qt.MouseButton.RightButton  # Qt6
         except AttributeError:
             right_button = Qt.RightButton  # Qt5
-        
+
         if event.button() == right_button:
             if self.dlg and self.dlg.isVisible():
                 self.dlg.close()
@@ -283,4 +283,3 @@ class BaseBearingTool(QgsMapTool):
         if self.dlg:
             self.dlg.close()
         super().deactivate()
-

@@ -26,6 +26,7 @@ from qgis.PyQt.QtGui import QCursor, QColor
 from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt.QtCore import Qt
 
+
 class copy_coordenada(QgsMapTool):
     def __init__(self, canvas, iface):
         super().__init__(canvas)
@@ -36,7 +37,7 @@ class copy_coordenada(QgsMapTool):
             self.setCursor(QCursor(Qt.CursorShape.CrossCursor))  # Qt6
         except AttributeError:
             self.setCursor(QCursor(Qt.CrossCursor))  # Qt5
-            
+
         # Configuração de snapping
         self.snap_utils = iface.mapCanvas().snappingUtils()
 
@@ -75,11 +76,11 @@ class copy_coordenada(QgsMapTool):
             right_button = Qt.MouseButton.RightButton  # Qt6
         except AttributeError:
             right_button = Qt.RightButton  # Qt5
-        
+
         if event.button() == right_button:
             self.canvas.unsetMapTool(self)
             return
-                    
+
         screen_pos = event.pos()
         # Usa o snapping com as configurações atuais do projeto
         snap_match = self.snap_utils.snapToMap(screen_pos)
@@ -119,6 +120,7 @@ class copy_coordenada(QgsMapTool):
         self.rubber_band_outline.reset(QgsWkbTypes.PolygonGeometry)
         super().deactivate()
 
+
 def copy_coordenada_def(iface):
     canvas = iface.mapCanvas()
     tool = copy_coordenada(canvas, iface)
@@ -130,8 +132,10 @@ def copy_coordenada_def(iface):
         duration=5
     )
 
+
 def run(iface):
     copy_coordenada_def(iface)
-    
+
+
 def unload():
     pass

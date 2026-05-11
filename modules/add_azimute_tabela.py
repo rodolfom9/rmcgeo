@@ -27,12 +27,12 @@ from qgis.PyQt.QtCore import QVariant
 
 class AzimuteTabelaDialog(BaseCalculadoraTabela):
     """Adiciona campo de azimute em formato GMS ou Decimal"""
-    
+
     window_title = "Adicionar Azimute em GMS na Tabela"
     field_name = "Azimute_GMS"  # Valor padrão inicial (será atualizado pelo formato)
     field_type = QVariant.String
     geometry_types = [QgsWkbTypes.LineGeometry]  # Apenas linhas
-    
+
     # Opções de formatação disponíveis
     format_options = {
         "GMS (Graus° Minutos' Segundos\")": """
@@ -48,7 +48,7 @@ class AzimuteTabelaDialog(BaseCalculadoraTabela):
         """,
         "Decimal (Graus)": "format_number(degrees(azimuth(start_point($geometry), end_point($geometry))), 4)"
     }
-    
+
     # Mapeamento de nomes de campo por formato
     field_names_by_format = {
         "GMS (Graus° Minutos' Segundos\")": "Azimute_GMS",

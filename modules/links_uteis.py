@@ -159,7 +159,7 @@ LINKS_UTEIS = [
 
 class LinksUteisManager:
     """Gerenciador de links úteis."""
-    
+
     def __init__(self, plugin_dir=None):
         """Inicializa o gerenciador de links."""
         self.links = LINKS_UTEIS
@@ -167,7 +167,7 @@ class LinksUteisManager:
     def tr(self, message):
         """Get the translation for a string using Qt translation API."""
         return QCoreApplication.translate('RMCGeo', message)
-    
+
     def open_link(self, url):
         """Abre um link no navegador padrão."""
         try:
@@ -179,20 +179,20 @@ class LinksUteisManager:
                 webbrowser.open(url)
             except:
                 pass
-    
+
     def create_menu_actions(self, parent_menu, iface):
         """
         Cria as ações de menu dinamicamente baseado nos links.
-        
+
         Args:
             parent_menu: Menu pai onde os links serão adicionados
             iface: Interface do QGIS
-        
+
         Returns:
             Lista de ações criadas
         """
         actions = []
-        
+
         if not self.links:
             # Sem links, mostrar mensagem
             no_links_action = QAction(self.tr("No links configured"), iface.mainWindow())
@@ -200,48 +200,48 @@ class LinksUteisManager:
             parent_menu.addAction(no_links_action)
             actions.append(no_links_action)
             return actions
-        
+
         # Agrupar por categoria
         for categoria_data in self.links:
             categoria = categoria_data.get('categoria', 'Sem Categoria')
             links_categoria = categoria_data.get('links', [])
-            
+
             if not links_categoria:
                 continue
-            
+
             # Criar submenu para cada categoria
             submenu = QMenu(self.tr(categoria), parent_menu)
             submenu.setIcon(QIcon(':/images/themes/default/mIconFolder.svg'))
             parent_menu.addMenu(submenu)
-            
+
             # Adicionar links da categoria
             for link_data in links_categoria:
                 nome = link_data.get('nome', 'Link')
                 url = link_data.get('url', '')
                 descricao = link_data.get('descricao', '')
-                
+
                 if not url:
                     continue
-                
+
                 # Criar ação para o link
                 action = QAction(
                     QIcon(':/images/themes/default/mIconWms.svg'),
                     self.tr(nome),
                     iface.mainWindow()
                 )
-                
+
                 if descricao:
                     translated_desc = self.tr(descricao)
                     action.setStatusTip(translated_desc)
                     action.setToolTip(translated_desc)
-                
+
                 # Conectar ação para abrir o link
                 # Usar lambda com argumento padrão para capturar o URL correto
                 action.triggered.connect(lambda checked=False, u=url: self.open_link(u))
-                
+
                 submenu.addAction(action)
                 actions.append(action)
-        
+
         return actions
 
 

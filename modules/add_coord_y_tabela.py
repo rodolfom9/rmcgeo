@@ -27,7 +27,7 @@ from qgis.PyQt.QtCore import QVariant
 
 class CoordYTabelaDialog(BaseCalculadoraTabela):
     """Adiciona campo com coordenada Y"""
-    
+
     window_title = "Adicionar Coordenada Y na Tabela"
     field_name = "Coord_Y"
     field_type = QVariant.String

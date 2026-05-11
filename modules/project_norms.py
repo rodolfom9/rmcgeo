@@ -30,12 +30,13 @@ from qgis.gui import QgsMapLayerComboBox
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), 'ui', 'project_norms.ui'))
 
+
 class ProjectNormsDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, iface, parent=None):
         super(ProjectNormsDialog, self).__init__(parent)
         self.setupUi(self)
         self.iface = iface
-        
+
         # Filtro para mostrar apenas camadas de polígono nos combos
         self.comboBaseLayer.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.comboVerde.setFilters(QgsMapLayerProxyModel.PolygonLayer)
@@ -44,7 +45,7 @@ class ProjectNormsDialog(QtWidgets.QDialog, FORM_CLASS):
         self.comboAPP.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.comboReserva.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.comboLotes.setFilters(QgsMapLayerProxyModel.PolygonLayer)
-        
+
         # Permitir seleção de 'Nenhuma Camada' nos itens de norma
         self.comboVerde.setAllowEmptyLayer(True)
         self.comboInst.setAllowEmptyLayer(True)
@@ -63,21 +64,21 @@ class ProjectNormsDialog(QtWidgets.QDialog, FORM_CLASS):
         """Calcula a área total somada de todas as feições de uma camada."""
         if not layer:
             return 0.0
-        
+
         total_area = 0.0
-        
+
         # Usar QgsDistanceArea para cálculos precisos (respeitando elipsoide)
         da = QgsDistanceArea()
         da.setSourceCrs(layer.crs(), QgsProject.instance().transformContext())
         da.setEllipsoid(QgsProject.instance().ellipsoid())
-        
+
         for feature in layer.getFeatures():
             if feature.hasGeometry():
                 geom = feature.geometry()
                 # Calcula área no plano ou elipsoide dependendo da config do projeto
                 area = da.measureArea(geom)
                 total_area += area
-        
+
         return total_area
 
     def calculate(self):
@@ -87,7 +88,7 @@ class ProjectNormsDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if not base_layer:
             self.iface.messageBar().pushMessage(
-                "Erro", 
+                "Erro",
                 "Selecione uma camada base (Gleba Total) primeiro.",
                 level=3
             )
@@ -96,7 +97,7 @@ class ProjectNormsDialog(QtWidgets.QDialog, FORM_CLASS):
         total_gleba_area = self.get_layer_area(base_layer)
         app_area = self.get_layer_area(app_layer)
         reserva_area = self.get_layer_area(reserva_layer)
-        
+
         # A área parcelável exclui APP e Reserva Legal
         restricao_total = app_area + reserva_area
         parcelable_area = total_gleba_area - restricao_total
@@ -114,7 +115,7 @@ class ProjectNormsDialog(QtWidgets.QDialog, FORM_CLASS):
         summary_text += f"Área de APP: {app_area:,.2f} m²<br>"
         summary_text += f"Área de Reserva Legal: {reserva_area:,.2f} m²<br>"
         summary_text += f"<b>Área Parcelável (Base de Cálculo): {parcelable_area:,.2f} m²</b><br><br>"
-        
+
         summary_text += "<table border='1' width='100%'>"
         summary_text += f"<tr><th>Categoria</th><th>Área (m²)</th><th>% s/ Parcelável</th></tr>"
 
@@ -141,39 +142,40 @@ class ProjectNormsDialog(QtWidgets.QDialog, FORM_CLASS):
             summary_text += f"<tr><td>{name}</td><td>{area:,.2f}</td><td>{percentage:.2f}%</td></tr>"
 
         summary_text += "</table>"
-        
+
         # Avaliação baseada no Art. 126 (Lei de Goiânia)
         # APMs (Verde e Inst) são calculados sobre a ÁREA PARCELÁVEL
         pct_verde_s_parcelavel = (verde_area / parcelable_area) * 100
         pct_inst_s_parcelavel = (inst_area / parcelable_area) * 100
         pct_total_apm_s_parcelavel = pct_verde_s_parcelavel + pct_inst_s_parcelavel
-        
+
         # Ocupação total: soma de TUDO em relação à GLEBA TOTAL
         area_ocupada_total = verde_area + inst_area + viario_area + app_area + reserva_area + lotes_area
         pct_ocupacao_global = (area_ocupada_total / total_gleba_area) * 100
-        
+
         summary_text += f"<br><b>Avaliação Técnica (Art. 126)</b>:<br>"
-        
+
         # Validação Área Verde (7.5% da Parcelável)
         status_verde = "✅ OK" if pct_verde_s_parcelavel >= 7.5 else "❌ ABAIXO"
         summary_text += f"• Áreas Verdes: {pct_verde_s_parcelavel:.2f}% (Mín. 7.5% da área parc.) - {status_verde}<br>"
-        
+
         # Validação Institucional (7.5% da Parcelável)
         status_inst = "✅ OK" if pct_inst_s_parcelavel >= 7.5 else "❌ ABAIXO"
         summary_text += f"• Áreas Institucionais: {pct_inst_s_parcelavel:.2f}% (Mín. 7.5% da área parc.) - {status_inst}<br>"
-        
+
         # Validação Total APM (15% da Parcelável)
         status_total = "✅ OK" if pct_total_apm_s_parcelavel >= 15.0 else "❌ ABAIXO"
         summary_text += f"• Total APMs: {pct_total_apm_s_parcelavel:.2f}% (Mín. 15.0% da área parc.) - {status_total}<br>"
-        
+
         summary_text += f"• <b>Total da área ocupada (Gleba Total): {pct_ocupacao_global:.2f}%</b><br>"
-        
+
         if pct_total_apm_s_parcelavel < 15.0 or pct_verde_s_parcelavel < 7.5 or pct_inst_s_parcelavel < 7.5:
             summary_text += "<br><span style='color: red;'>⚠️ Atenção: O projeto não atende aos requisitos mínimos de APMs.</span>"
         else:
             summary_text += "<br><span style='color: green;'>✔️ O projeto atende aos requisitos do Plano Diretor de Goiânia.</span>"
 
         self.textSummary.setHtml(summary_text)
+
 
 def run(iface):
     dialog = ProjectNormsDialog(iface, iface.mainWindow())

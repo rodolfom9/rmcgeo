@@ -45,11 +45,11 @@ class street_view_class(QgsMapTool):
             right_button = Qt.MouseButton.RightButton  # Qt6
         except AttributeError:
             right_button = Qt.RightButton  # Qt5
-        
+
         if event.button() == right_button:
             self.canvas.unsetMapTool(self)
             return
-            
+
         point = self.toMapCoordinates(event.pos())
         source_crs = self.canvas.mapSettings().destinationCrs()
         dest_crs = QgsCoordinateReferenceSystem("EPSG:4326")
@@ -72,8 +72,10 @@ def street_view(iface):
     canvas.setMapTool(tool)
     iface.messageBar().pushMessage("Street View", "Clique no mapa para abrir o Street View", level=Qgis.Info)
 
+
 def run(iface):
     street_view(iface)
+
 
 def unload():
     pass

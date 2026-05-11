@@ -43,7 +43,7 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
 
         # Configura o campo de saída decimal como somente leitura
         self.saida_decimal.setReadOnly(True)
-        
+
         # Carrega o ícone SVG no canto inferior esquerdo
         self.carregar_logo()
 
@@ -52,13 +52,13 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
         self.buttonconvertd.clicked.connect(self.convertparagraus)  # Botão para Decimal -> DMS
         self.copyqline.clicked.connect(self.copy)  # Copiar Grau Decimal
         self.copyqline2.clicked.connect(self.copy_dms)  # Copiar DMS
-        
+
         # Ativa validação em tempo real
         self.add_grau.textEdited.connect(self.digitagraus)  # Validação em tempo real para graus
         self.add_minuto.textEdited.connect(self.digitagraus)  # Validação em tempo real para minutos
         self.add_segundo.textEdited.connect(self.digitagraus)  # Validação em tempo real para segundos
         self.entrada_decimal.textEdited.connect(self.validar_decimal)  # Validação para grau decimal
-        
+
         # Configuração dos ícones
         self.copyqline.setIcon(QIcon(':/images/themes/default/mActionEditCopy.svg'))
         self.copyqline2.setIcon(QIcon(':/images/themes/default/mActionEditCopy.svg'))
@@ -67,7 +67,7 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
         """Carrega o ícone SVG do plugin no canto inferior esquerdo."""
         # Caminho para o ícone SVG
         svg_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'icon.svg')
-            
+
         # Verifica se o arquivo existe
         if os.path.exists(svg_path):
             # Cria um QIcon a partir do arquivo SVG
@@ -81,13 +81,13 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
         """Validação de entrada com suporte para números inteiros e float."""
         if not text:  # Permite campo vazio
             return True
-            
+
         try:
             if allow_float:
                 valor = float(text)
             else:
                 valor = int(text)
-                
+
             return min_val <= valor <= max_val
         except ValueError:
             return False
@@ -97,20 +97,20 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
         try:
             sender = self.sender()
             valid = True
-            
+
             if sender == self.add_grau:
                 valid = self.validate_input(sender, text, -180, 180)
             elif sender == self.add_minuto:
                 valid = self.validate_input(sender, text, 0, 59)
             elif sender == self.add_segundo:
                 valid = self.validate_input(sender, text, 0, 59, allow_float=True)
-                
+
             # Aplica estilo visual para indicar erro
             if not valid and text:
                 sender.setStyleSheet("background-color: #ffcccc;")
             else:
                 sender.setStyleSheet("")
-                
+
         except Exception as e:
             print(f"Erro em digitagraus: {e}")
 
@@ -119,14 +119,14 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
         try:
             sender = self.sender()
             valid = True
-            
+
             if text:
                 try:
                     valor = float(text)
                     valid = -180 <= valor <= 180
                 except ValueError:
                     valid = False
-            
+
             # Aplica estilo visual para indicar erro
             if not valid and text:
                 sender.setStyleSheet("background-color: #ffcccc;")
@@ -135,7 +135,7 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
                     self.iface.statusBarIface().showMessage("Valor deve estar entre -180 e 180 graus", 3000)
             else:
                 sender.setStyleSheet("")
-                
+
         except Exception as e:
             print(f"Erro na validação decimal: {e}")
 
@@ -146,12 +146,12 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
             grau_text = self.add_grau.text().strip()
             minuto_text = self.add_minuto.text().strip()
             segundo_text = self.add_segundo.text().strip()
-            
+
             # Verifica se pelo menos o campo de graus foi preenchido
             if not grau_text:
                 self.saida_decimal.setText("Informe ao menos o valor em graus")
                 return
-                
+
             # Conversão dos valores para números
             graus = int(grau_text)
             minutos = int(minuto_text) if minuto_text else 0
@@ -171,7 +171,7 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
             # Determina o sinal para cálculo correto
             sinal = -1 if graus < 0 else 1
             graus_abs = abs(graus)
-            
+
             # Conversão para graus decimais mantendo o sinal
             decimal = sinal * (graus_abs + (minutos / 60) + (segundos / 3600))
 
@@ -189,15 +189,15 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
         """Converte Graus Decimais para Graus, Minutos e Segundos."""
         try:
             decimal_text = self.entrada_decimal.text().strip()
-            
+
             if not decimal_text:
                 self.saida_grau.setText("")
                 self.saida_minuto.setText("")
                 self.saida_segundo.setText("")
                 return
-                
+
             decimal = float(decimal_text)
-            
+
             # Verifica se o valor está dentro do intervalo válido
             if decimal < -180 or decimal > 180:
                 self.saida_grau.setText("Valor inválido")
@@ -206,17 +206,17 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
                 if self.iface:
                     self.iface.statusBarIface().showMessage("Valor deve estar entre -180 e 180 graus", 3000)
                 return
-            
+
             # Tratamento do sinal
             sinal = -1 if decimal < 0 else 1
             decimal_abs = abs(decimal)
-            
+
             # Cálculos para conversão
             graus_abs = math.floor(decimal_abs)
             minutos_float = (decimal_abs - graus_abs) * 60
             minutos = math.floor(minutos_float)
             segundos = (minutos_float - minutos) * 60
-            
+
             # Correção para arredondamentos
             if round(segundos, 2) >= 60:
                 segundos = 0
@@ -224,15 +224,15 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
                 if minutos >= 60:
                     minutos = 0
                     graus_abs += 1
-            
+
             # Aplica o sinal apenas aos graus
             graus = sinal * graus_abs
-            
+
             # Exibe os resultados
             self.saida_grau.setText(str(graus))
             self.saida_minuto.setText(str(minutos))
             self.saida_segundo.setText(f"{segundos:.2f}")
-            
+
         except ValueError:
             self.saida_grau.setText("Erro")
             self.saida_minuto.setText("Erro")
@@ -248,11 +248,11 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
                 if self.iface:
                     self.iface.statusBarIface().showMessage("Não há valor para copiar", 3000)
                 return
-                
+
             self.clipboard.setText(s)
             if self.iface:
                 self.iface.statusBarIface().showMessage(f"'{s}' Copiado para a Área de Transferência", 3000)
-            
+
         except Exception as e:
             if self.iface:
                 self.iface.statusBarIface().showMessage(f"Erro ao copiar: {str(e)}", 5000)
@@ -264,18 +264,18 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
             grau = self.saida_grau.text().strip()
             minuto = self.saida_minuto.text().strip()
             segundo = self.saida_segundo.text().strip()
-            
+
             if not grau and not minuto and not segundo:
                 if self.iface:
                     self.iface.statusBarIface().showMessage("Não há valor para copiar", 3000)
                 return
-            
+
             s = f"{grau}° {minuto}' {segundo}\""
             self.clipboard.setText(s)
-            
+
             if self.iface:
                 self.iface.statusBarIface().showMessage(f"'{s}' Copiado para a Área de Transferência", 3000)
-                
+
         except Exception as e:
             if self.iface:
                 self.iface.statusBarIface().showMessage(f"Erro ao copiar: {str(e)}", 5000)
@@ -291,12 +291,13 @@ class GmsToDecimal(QtWidgets.QDialog, FORM_CLASS):
         self.saida_grau.setText("")
         self.saida_minuto.setText("")
         self.saida_segundo.setText("")
-        
+
         # Limpa qualquer estilo aplicado
         self.add_grau.setStyleSheet("")
         self.add_minuto.setStyleSheet("")
         self.add_segundo.setStyleSheet("")
         self.entrada_decimal.setStyleSheet("")
+
 
 def run(iface):
     """Função para executar o diálogo de conversão GMS para decimal."""
@@ -308,6 +309,7 @@ def run(iface):
         dlg.exec()
     else:
         dlg.exec_()
+
 
 def unload():
     """Função para limpar recursos quando o plugin for descarregado."""

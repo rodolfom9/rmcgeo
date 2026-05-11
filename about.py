@@ -22,7 +22,7 @@
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QTextBrowser, QVBoxLayout
-from qgis.PyQt.QtGui import QPixmap, QIcon
+from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import QSize
 
 import os
@@ -30,21 +30,21 @@ import os
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'ui', 'about.ui'))
 
+
 class AboutDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        # Aqui você pode preencher campos dinamicamente, se quiser
         self.plugin_name.setText("RMCGEO")
         self.plugin_version.setText("Versão 1.9.0")
-        
-        # Conecta o botão de fechar
+
+        #Conecta o botão de fechar
         self.close.accepted.connect(self.accept)
         self.close.rejected.connect(self.reject)
-        
+
         # Carrega o ícone SVG no QLabel
         self.carregar_icon()
-        
+
         # Carrega o arquivo de informações
         info_path = os.path.join(os.path.dirname(__file__), 'utils', 'info.html')
         try:
@@ -73,7 +73,7 @@ class AboutDialog(QDialog, FORM_CLASS):
             tools_browser.setReadOnly(True)
             tools_browser.setHtml(tools_text)
             tools_browser.setTextInteractionFlags(tools_browser.textInteractionFlags() | 0x00000001)
-            
+
             # Adiciona ao layout da aba tools_tab
             layout = QVBoxLayout()
             layout.setContentsMargins(0, 0, 0, 0)
@@ -81,13 +81,13 @@ class AboutDialog(QDialog, FORM_CLASS):
             self.tools_tab.setLayout(layout)
         except Exception as e:
             print(f"Erro ao carregar arquivo de ferramentas: {e}")
-    
+
     def carregar_icon(self):
         """Carrega o ícone SVG no QLabel"""
         try:
             # Caminho para o ícone SVG
             svg_path = os.path.join(os.path.dirname(__file__), 'icon.svg')
-            
+
             # Verifica se o arquivo existe
             if os.path.exists(svg_path):
                 # Cria um QIcon a partir do arquivo SVG

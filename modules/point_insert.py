@@ -33,6 +33,7 @@ import os
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'point_insert.ui'))
 
+
 class PointInsert(QgsMapTool):
     def __init__(self, canvas, dialog):
         super().__init__(canvas)
@@ -45,25 +46,25 @@ class PointInsert(QgsMapTool):
         if event.button() == 2:  # 2 é o botão direito do mouse
             self.canvas.unsetMapTool(self)
             return
-            
+
         pos = event.pos()
-        self.last_map_point = self.toMapCoordinates(pos)        
+        self.last_map_point = self.toMapCoordinates(pos)
         # Verifica se há uma camada ativa e se está em modo de edição
         layer = iface.activeLayer()
         if not layer:
             QMessageBox.warning(self.dialog, "Aviso", "Nenhuma camada selecionada!")
             return
-            
+
         if not layer.isEditable():
             QMessageBox.warning(self.dialog, "Aviso", "A camada precisa estar em modo de edição!")
             return
-            
+
         # Verifica se a camada é do tipo ponto ou multiponto
         geometry_type = layer.geometryType()
         if geometry_type not in [QgsWkbTypes.PointGeometry, QgsWkbTypes.MultiPoint]:
             QMessageBox.warning(self.dialog, "Aviso", "A camada deve ser do tipo ponto ou multiponto!")
             return
-            
+
         self.show_coordinate_input(pos, self.last_map_point)
 
     def show_coordinate_input(self, pos, map_point):
@@ -80,7 +81,7 @@ class PointInsert(QgsMapTool):
     def add_point(self, east, north):
         print("DEBUG: add_point chamado")
         print(f"DEBUG: Coordenadas recebidas - Este: {east}, Norte: {north}")
-        
+
         try:
             x = float(east) if east else self.last_map_point.x()
             y = float(north) if north else self.last_map_point.y()
@@ -92,11 +93,11 @@ class PointInsert(QgsMapTool):
         if not layer:
             iface.messageBar().pushMessage("Erro", "Nenhuma camada selecionada!", level=1)
             return
-            
+
         if not isinstance(layer, QgsVectorLayer):
             iface.messageBar().pushMessage("Erro", "A camada selecionada não é uma camada vetorial!", level=1)
             return
-            
+
         if not layer.isEditable():
             iface.messageBar().pushMessage("Erro", "A camada precisa estar em modo de edição!", level=1)
             return
@@ -105,21 +106,21 @@ class PointInsert(QgsMapTool):
         geometry_type = layer.geometryType()
         if geometry_type not in [QgsWkbTypes.PointGeometry, QgsWkbTypes.MultiPoint]:
             iface.messageBar().pushMessage("Erro", "A camada deve ser do tipo ponto ou multiponto!", level=1)
-            return        
+            return
         try:
             # Cria o ponto
             point = QgsPointXY(x, y)
-            
+
             # Cria a geometria
             geom = QgsGeometry.fromPointXY(point)
-            
+
             # Cria a feature
             feature = QgsFeature(layer.fields())
             feature.setGeometry(geom)
 
             # Adiciona o ponto à camada
             success = layer.addFeature(feature)
-            
+
             if success:
                 # Força a atualização do estilo
                 layer.triggerRepaint()
@@ -127,7 +128,7 @@ class PointInsert(QgsMapTool):
                 self.canvas.refresh()
             else:
                 iface.messageBar().pushMessage("Erro", "Falha ao adicionar o ponto à camada!", level=1)
-                
+
         except Exception as e:
             iface.messageBar().pushMessage("Erro", f"Erro ao criar ponto: {str(e)}", level=1)
 
@@ -135,6 +136,7 @@ class PointInsert(QgsMapTool):
         if self.dialog.isVisible():
             self.dialog.close()
         super().deactivate()
+
 
 class PointInsertDialog(QDialog, FORM_CLASS):
     def __init__(self, iface):
@@ -169,7 +171,7 @@ class PointInsertDialog(QDialog, FORM_CLASS):
         if not layer:
             QMessageBox.warning(self, "Aviso", "Selecione uma camada de pontos ou multipontos!")
             return
-            
+
         geometry_type = layer.geometryType()
         if geometry_type not in [QgsWkbTypes.PointGeometry, QgsWkbTypes.MultiPoint]:
             QMessageBox.warning(self, "Aviso", "Selecione uma camada de pontos ou multipontos!")
@@ -198,9 +200,11 @@ class PointInsertDialog(QDialog, FORM_CLASS):
             self.canvas.unsetMapTool(self.tool)
             self.tool = None
 
+
 def run(iface):
     tool = PointInsertDialog(iface=iface)
     tool.run()
+
 
 def unload():
     pass

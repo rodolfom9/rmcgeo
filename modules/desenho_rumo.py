@@ -35,7 +35,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class RumoDistanceTool(BaseBearingTool):
     """Ferramenta para desenhar linhas usando rumo (quadrante) e distância."""
-    
+
     def get_nome_camada(self):
         """Retorna o nome da camada."""
         return "Linhas_Rumo"
@@ -49,14 +49,14 @@ class RumoDistanceTool(BaseBearingTool):
             header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)  # Qt6
         except AttributeError:
             header.setSectionResizeMode(QHeaderView.Interactive)  # Qt5
-        
+
         table.setColumnCount(3)
-        
+
         # Define largura fixa das colunas (para 370px disponíveis)
         table.setColumnWidth(0, 140)  # Rumo
         table.setColumnWidth(1, 100)  # Quadrante
         table.setColumnWidth(2, 126)  # Distância
-        
+
         # Compatibilidade Qt5/Qt6:
         try:
             # Qt6
@@ -66,7 +66,7 @@ class RumoDistanceTool(BaseBearingTool):
             # Qt5
             table.setEditTriggers(QAbstractItemView.DoubleClicked | 
                              QAbstractItemView.EditKeyPressed)
-        
+
         table.cellChanged.connect(self.ao_mudar_celula)
 
     def show_dialog(self):
@@ -89,7 +89,7 @@ class RumoDistanceTool(BaseBearingTool):
         try:
             if rumo_decimal < 0 or rumo_decimal > 90:
                 return None
-            
+
             # Converter para azimute baseado no quadrante
             if quadrante == 'NE':
                 azimuth = rumo_decimal
@@ -101,9 +101,9 @@ class RumoDistanceTool(BaseBearingTool):
                 azimuth = 360 - rumo_decimal
             else:
                 return None
-            
+
             return azimuth
-            
+
         except (ValueError, AttributeError):
             return None
 
@@ -121,7 +121,7 @@ class RumoDistanceTool(BaseBearingTool):
                 return dms_str
         except ValueError:
             return dms_str
-    
+
     def remove_dms_symbols(self, dms_str):
         """Remove os símbolos de graus, minutos e segundos de uma string."""
         # Remove °, ', "
@@ -134,9 +134,9 @@ class RumoDistanceTool(BaseBearingTool):
             # Converter rumo de DMS para decimal
             rumo_dms = self.dlg.rumoInput.text()
             quadrante = self.dlg.quadranteCombo.currentText()
-            
+
             rumo_decimal = self.dms_to_decimal(rumo_dms)
-            
+
             if rumo_decimal is None or rumo_decimal < 0 or rumo_decimal > 90:
                 self.iface.messageBar().pushMessage(
                     "Erro", 
@@ -144,9 +144,9 @@ class RumoDistanceTool(BaseBearingTool):
                     level=Qgis.Warning
                 )
                 return
-            
+
             azimuth = self.converter_rumo_azimute(rumo_decimal, quadrante)
-            
+
             if azimuth is None:
                 self.iface.messageBar().pushMessage(
                     "Erro", 
@@ -154,7 +154,7 @@ class RumoDistanceTool(BaseBearingTool):
                     level=Qgis.Warning
                 )
                 return
-                
+
             if not self.dlg.distanciaInput.text():
                 self.iface.messageBar().pushMessage(
                     "Erro", 
@@ -162,9 +162,9 @@ class RumoDistanceTool(BaseBearingTool):
                     level=Qgis.Warning
                 )
                 return
-                
+
             distance = float(self.dlg.distanciaInput.text())
-            
+
             if distance <= 0:
                 self.iface.messageBar().pushMessage(
                     "Erro", 
@@ -172,32 +172,32 @@ class RumoDistanceTool(BaseBearingTool):
                     level=Qgis.Warning
                 )
                 return
-                
+
             # Criar string formatada do rumo para exibição
             rumo_formatted = f"{self.format_rumo_dms(rumo_dms)} {quadrante}"
             self.inserted_values.append((rumo_formatted, azimuth, distance))
-            
+
             # Desconectar o sinal para evitar recursão ao adicionar itens
             table = self.dlg.coordenadasTable
             table.cellChanged.disconnect(self.ao_mudar_celula)
-            
+
             row = table.rowCount()
             table.insertRow(row)
-            
+
             # Mostrar o valor formatado na tabela
             rumo_only = self.format_rumo_dms(rumo_dms)
             table.setItem(row, 0, QTableWidgetItem(rumo_only))
             table.setItem(row, 1, QTableWidgetItem(quadrante))
             table.setItem(row, 2, QTableWidgetItem(f"{distance:.2f}m"))
-            
+
             # Reconectar o sinal após inserir os itens
             table.cellChanged.connect(self.ao_mudar_celula)
-            
+
             self.dlg.rumoInput.clear()
             self.dlg.distanciaInput.clear()
-            
+
             self.atualizar_preview()
-            
+
         except ValueError:
             self.iface.messageBar().pushMessage(
                 "Erro", 
@@ -209,17 +209,17 @@ class RumoDistanceTool(BaseBearingTool):
         """Atualiza os valores quando a tabela é editada pelo usuário."""
         try:
             table = self.dlg.coordenadasTable
-            
+
             if row >= len(self.inserted_values):
                 return
-                
+
             cell_text = table.item(row, column).text()
-            
+
             if column == 0:  # Rumo
                 # Validar e atualizar o rumo
                 try:
                     rumo_decimal = self.dms_to_decimal(cell_text)
-                    
+
                     if rumo_decimal is None or rumo_decimal < 0 or rumo_decimal > 90:
                         self.iface.messageBar().pushMessage(
                             "Erro", 
@@ -232,26 +232,26 @@ class RumoDistanceTool(BaseBearingTool):
                         table.setItem(row, column, QTableWidgetItem(old_rumo))
                         table.cellChanged.connect(self.ao_mudar_celula)
                         return
-                    
+
                     # Pegar o quadrante atual
                     old_quadrant = self.inserted_values[row][0].split()[-1]
-                    
+
                     # Recalcular azimute com novo rumo e quadrante existente
                     new_azimuth = self.converter_rumo_azimute(rumo_decimal, old_quadrant)
                     original_distance = self.inserted_values[row][2]
-                    
+
                     # Formatar o rumo
                     rumo_formatted_display = self.format_rumo_dms(cell_text)
                     rumo_formatted = f"{rumo_formatted_display} {old_quadrant}"
-                    
+
                     self.inserted_values[row] = (rumo_formatted, new_azimuth, original_distance)
-                    
+
                     table.cellChanged.disconnect(self.ao_mudar_celula)
                     table.setItem(row, column, QTableWidgetItem(rumo_formatted_display))
                     table.cellChanged.connect(self.ao_mudar_celula)
-                    
+
                     self.atualizar_preview()
-                    
+
                 except (ValueError, AttributeError):
                     self.iface.messageBar().pushMessage(
                         "Erro", 
@@ -264,13 +264,13 @@ class RumoDistanceTool(BaseBearingTool):
                     table.setItem(row, column, QTableWidgetItem(old_rumo))
                     table.cellChanged.connect(self.ao_mudar_celula)
                 return
-                
+
             elif column == 1:
                 new_quadrant = cell_text.strip().upper()
                 old_quadrant = self.inserted_values[row][0].split()[-1]
                 if new_quadrant == old_quadrant:
                     return
-                
+
                 # Validar quadrante
                 valid_quadrants = ['NE', 'SE', 'SW', 'NW']
                 if new_quadrant not in valid_quadrants:
@@ -283,67 +283,67 @@ class RumoDistanceTool(BaseBearingTool):
                     table.setItem(row, column, QTableWidgetItem(old_quadrant))
                     table.cellChanged.connect(self.ao_mudar_celula)
                     return
-                
+
                 # Atualizar o azimute baseado no novo quadrante
                 rumo_parts = self.inserted_values[row][0].split()
                 rumo_str_with_symbols = ' '.join(rumo_parts[:-1])  # Pega tudo menos o quadrante
-                
+
                 # Remover símbolos de °, ', " antes de processar
                 rumo_str_clean = self.remove_dms_symbols(rumo_str_with_symbols)
                 rumo_decimal = self.dms_to_decimal(rumo_str_clean)
-                
+
                 if rumo_decimal is None:
                     return
-                
+
                 new_azimuth = self.converter_rumo_azimute(rumo_decimal, new_quadrant)
-                
+
                 if new_azimuth is None:
                     return
-                
+
                 original_distance = self.inserted_values[row][2]
                 rumo_formatted = f"{rumo_str_with_symbols} {new_quadrant}"
                 self.inserted_values[row] = (rumo_formatted, new_azimuth, original_distance)
-                
+
                 # Atualizar a célula sem disparar o evento
                 table.cellChanged.disconnect(self.ao_mudar_celula)
                 table.setItem(row, column, QTableWidgetItem(new_quadrant))
                 table.cellChanged.connect(self.ao_mudar_celula)
-                
+
                 # Atualizar preview
                 self.atualizar_preview()
                 return
-                
+
             elif column == 2:  # Distância
                 clean_text = cell_text.replace('m', '').strip()
-                
+
                 try:
                     distance = float(clean_text)
                     if distance <= 0:
                         raise ValueError("Distância deve ser maior que zero")
-                        
+
                     original_rumo = self.inserted_values[row][0]
                     original_azimuth = self.inserted_values[row][1]
                     self.inserted_values[row] = (original_rumo, original_azimuth, distance)
-                    
+
                     table.cellChanged.disconnect(self.ao_mudar_celula)
                     table.setItem(row, column, QTableWidgetItem(f"{distance:.2f}m"))
                     table.cellChanged.connect(self.ao_mudar_celula)
-                    
+
                 except ValueError:
                     self.iface.messageBar().pushMessage(
                         "Erro", 
                         "Distância inválida. Use um valor numérico maior que zero.",
                         level=Qgis.Warning
                     )
-                    
+
                     table.cellChanged.disconnect(self.ao_mudar_celula)
                     old_distance = self.inserted_values[row][2]
                     table.setItem(row, column, QTableWidgetItem(f"{old_distance:.2f}m"))
                     table.cellChanged.connect(self.ao_mudar_celula)
                     return
-            
+
             self.atualizar_preview()
-            
+
         except Exception as e:
             print(f"DEBUG: Erro ao atualizar valor na tabela: {str(e)}")
             self.atualizar_preview()
@@ -353,10 +353,10 @@ class RumoDistanceTool(BaseBearingTool):
         try:
             rumo_dms = self.dlg.rumoInput.text()
             quadrante = self.dlg.quadranteCombo.currentText()
-            
+
             rumo_decimal = self.dms_to_decimal(rumo_dms)
             azimuth = self.converter_rumo_azimute(rumo_decimal, quadrante) if rumo_decimal is not None else None
-            
+
             distance = float(self.dlg.distanciaInput.text()) if self.dlg.distanciaInput.text() else None
             self.preview_line(self.start_point, azimuth, distance)
         except ValueError:
@@ -365,12 +365,12 @@ class RumoDistanceTool(BaseBearingTool):
 
 class RumoDistanceDialog(QtWidgets.QDialog, FORM_CLASS):
     """Diálogo para entrada de rumo e distância."""
-    
+
     def __init__(self, iface, parent=None):
         super().__init__(parent)
         self.iface = iface
         self.setupUi(self)
-        
+
         # Carregar o ícone SVG
         svg_path = os.path.join(
             os.path.dirname(os.path.dirname(__file__)), 
@@ -381,22 +381,22 @@ class RumoDistanceDialog(QtWidgets.QDialog, FORM_CLASS):
             pixmap = icon.pixmap(QSize(32, 32))
             self.icon.setPixmap(pixmap)
             self.icon.setText("")
-            
+
         # Conectar sinais para validação em tempo real
         self.rumoInput.textChanged.connect(self.validar_rumo)
         self.quadranteCombo.currentTextChanged.connect(lambda: self.validar_rumo(self.rumoInput.text()))
         self.distanciaInput.textChanged.connect(self.validar_distancia)
-        
+
     def validar_rumo(self, text):
         """Validação em tempo real para entrada de rumo."""
         if not text:
             self.rumoInput.setStyleSheet("")
             return
-            
+
         try:
             parts = text.strip().split()
             valid = False
-            
+
             if len(parts) == 1:
                 graus = float(parts[0])
                 valid = 0 <= graus <= 90
@@ -411,23 +411,23 @@ class RumoDistanceDialog(QtWidgets.QDialog, FORM_CLASS):
                 valid = (0 <= graus <= 90) and (0 <= minutos < 60) and (0 <= segundos < 60)
             else:
                 valid = False
-                
+
             if not valid:
                 self.rumoInput.setStyleSheet("background-color: #ffcccc;")
                 if self.iface:
                     self.iface.statusBarIface().showMessage("Rumo deve estar entre 0 e 90 graus", 3000)
             else:
                 self.rumoInput.setStyleSheet("")
-                
+
         except ValueError:
             self.rumoInput.setStyleSheet("background-color: #ffcccc;")
-    
+
     def validar_distancia(self, text):
         """Validação em tempo real para entrada de distância."""
         if not text:
             self.distanciaInput.setStyleSheet("")
             return
-            
+
         try:
             distancia = float(text)
             if distancia <= 0:
@@ -453,15 +453,15 @@ def run(iface):
             "Por favor, altere o sistema de coordenadas do projeto para UTM."
         )
         return
-    
+
     # Verificar se a projeção contém "UTM" ou "Transverse Mercator" no nome
     proj_name = crs.description().upper()
     projection_method = crs.projectionAcronym().upper()
-    
+
     is_utm = ("UTM" in proj_name or 
               "UTM" in projection_method or 
               "UNIVERSAL TRANSVERSE MERCATOR" in proj_name)
-    
+
     if not is_utm:
         QMessageBox.warning(
             iface.mainWindow(),
@@ -471,7 +471,7 @@ def run(iface):
             f"Por favor, altere o sistema de coordenadas do projeto para UTM."
         )
         return
-    
+
     tool = RumoDistanceTool(canvas, iface)
     canvas.setMapTool(tool)
     iface.messageBar().pushMessage(

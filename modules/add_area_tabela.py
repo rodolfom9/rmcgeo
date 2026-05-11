@@ -27,13 +27,13 @@ from qgis.PyQt.QtCore import QVariant
 
 class AreaTabelaDialog(BaseCalculadoraTabela):
     """Adiciona campo de área em hectares"""
-    
+
     window_title = "Adicionar Área na Tabela de Atributos"
     field_name = "Area_ha"  # Valor padrão inicial (será atualizado pelo formato)
     field_type = QVariant.String
     expression_string = "format_number($area/10000,2)"  # Padrão: hectares
     geometry_types = [QgsWkbTypes.PolygonGeometry]  # Apenas polígonos
-    
+
     # Opções de formatação disponíveis
     format_options = {
         "Hectares (ha)": "format_number($area/10000,2)",
@@ -41,7 +41,7 @@ class AreaTabelaDialog(BaseCalculadoraTabela):
         "Quilômetros² (km²)": "format_number($area/1000000,3)",
         "Acres": "format_number($area/4046.86,3)"
     }
-    
+
     # Mapeamento de nomes de campo por formato
     field_names_by_format = {
         "Hectares (ha)": "Area_ha",

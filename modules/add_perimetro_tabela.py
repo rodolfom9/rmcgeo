@@ -27,20 +27,20 @@ from qgis.PyQt.QtCore import QVariant
 
 class PerimetroTabelaDialog(BaseCalculadoraTabela):
     """Adiciona campo de perímetro em metros"""
-    
+
     window_title = "Adicionar Perímetro na Tabela"
     field_name = "Perim_m"  # Valor padrão inicial (será atualizado pelo formato)
     field_type = QVariant.String
     expression_string = "format_number($perimeter, 2)"  # Padrão: metros
     geometry_types = [QgsWkbTypes.PolygonGeometry]  # Apenas polígonos
-    
+
     # Opções de formatação disponíveis
     format_options = {
         "Metros (m)": "format_number($perimeter, 2)",
         "Quilômetros (km)": "format_number($perimeter/1000, 3)",
         "Centímetros (cm)": "format_number($perimeter*100, 2)"
     }
-    
+
     # Mapeamento de nomes de campo por formato
     field_names_by_format = {
         "Metros (m)": "Perim_m",

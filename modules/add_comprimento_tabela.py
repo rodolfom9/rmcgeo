@@ -27,20 +27,20 @@ from qgis.PyQt.QtCore import QVariant
 
 class ComprimentoTabelaDialog(BaseCalculadoraTabela):
     """Adiciona campo com comprimento da linha em metros"""
-    
+
     window_title = "Adicionar Comprimento na Tabela"
     field_name = "Comp_m"  # Valor padrão inicial (será atualizado pelo formato)
     field_type = QVariant.String
     expression_string = "format_number($length, 3)"  # Padrão: metros
     geometry_types = [QgsWkbTypes.LineGeometry]  # Apenas linhas
-    
+
     # Opções de formatação disponíveis
     format_options = {
         "Metros (m)": "format_number($length, 3)",
         "Quilômetros (km)": "format_number($length/1000, 3)",
         "Centímetros (cm)": "format_number($length*100, 2)"
     }
-    
+
     # Mapeamento de nomes de campo por formato
     field_names_by_format = {
         "Metros (m)": "Comp_m",

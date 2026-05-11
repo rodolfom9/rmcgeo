@@ -49,25 +49,26 @@ from .about import AboutDialog
 import os.path
 #from . import resources
 
+
 class RMCGeo:
     def __init__(self, iface):
         self.iface = iface
         self.plugin_menu = None
-        
+
         # Inicialização do sistema de tradução
         self.plugin_dir = os.path.dirname(__file__)
         locale = QSettings().value('locale/userLocale')[0:2]
         self.locale = locale
-        
+
         # Log para depuração
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
             'rmcgeo_{}.qm'.format(locale))
-            
+
         print(f"RMCGEO Plugin: Idioma detectado = {locale}")
         print(f"RMCGEO Plugin: Procurando arquivo de tradução em {locale_path}")
-        
+
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             result = self.translator.load(locale_path)
@@ -211,7 +212,7 @@ class RMCGeo:
         menu_links_uteis = QMenu(self.tr("Useful Links"), self.plugin_menu)
         menu_links_uteis.setIcon(QIcon(':/images/themes/default/mIconWms.svg'))
         self.plugin_menu.addMenu(menu_links_uteis)
-        
+
         # Inicializar gerenciador de links (sem precisar passar plugin_dir)
         self.links_manager = LinksUteisManager()
         # Criar ações de links dinamicamente
