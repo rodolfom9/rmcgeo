@@ -172,8 +172,21 @@ class ChanfroTool(QgsMapTool):
             )
             return
 
-        success1 = self.update_feature_geometry(layer, self.first_line, extended_first)
-        success2 = self.update_feature_geometry(layer, self.second_line, extended_second)
+        # Inicia comando de edição para agrupar as duas extensões em um único comando
+        layer.beginEditCommand("Chanfro/Estender (RMCGEO)")
+
+        try:
+            success1 = self.update_feature_geometry(layer, self.first_line, extended_first)
+            success2 = self.update_feature_geometry(layer, self.second_line, extended_second)
+
+            if success1 and success2:
+                layer.endEditCommand()
+            else:
+                layer.destroyEditCommand()
+                self.show_message("Falha ao atualizar geometrias!", Qgis.Warning)
+        except Exception as e:
+            layer.destroyEditCommand()
+            self.show_message(f"Erro inesperado: {str(e)}", Qgis.Critical)
 
     def create_chamfer_preview(self, geom1, geom2):
         """Cria um preview visual do chanfro mostrando as extensões e o ponto de interseção."""
@@ -514,7 +527,9 @@ class ChanfroTool(QgsMapTool):
         if not layer or not feature or not new_geometry:
             return False
 
-        if not self.ensure_edit_mode(layer):
+        # Verifica se já há um comando ou transação ativa, pois apply_chamfer já usa beginEditCommand
+        # Mas mantemos isEditable para segurança individual
+        if not layer.isEditable():
             return False
 
         success = layer.changeGeometry(feature.id(), new_geometry)
