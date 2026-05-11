@@ -107,6 +107,10 @@ class PointInsert(QgsMapTool):
         if geometry_type not in [QgsWkbTypes.PointGeometry, QgsWkbTypes.MultiPoint]:
             iface.messageBar().pushMessage("Erro", "A camada deve ser do tipo ponto ou multiponto!", level=1)
             return
+
+        # Garante que a operação seja tratada como um comando único no desfazer/refazer
+        layer.beginEditCommand("Inserir Ponto (RMCGEO)")
+
         try:
             # Cria o ponto
             point = QgsPointXY(x, y)
@@ -122,14 +126,20 @@ class PointInsert(QgsMapTool):
             success = layer.addFeature(feature)
 
             if success:
+                # Finaliza o comando com sucesso
+                layer.endEditCommand()
                 # Força a atualização do estilo
                 layer.triggerRepaint()
                 # Atualiza o canvas
                 self.canvas.refresh()
             else:
+                # Cancela o comando em caso de falha no addFeature
+                layer.destroyEditCommand()
                 iface.messageBar().pushMessage("Erro", "Falha ao adicionar o ponto à camada!", level=1)
 
         except Exception as e:
+            # Cancela o comando em caso de erro inesperado
+            layer.destroyEditCommand()
             iface.messageBar().pushMessage("Erro", f"Erro ao criar ponto: {str(e)}", level=1)
 
     def deactivate(self):
