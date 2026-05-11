@@ -36,7 +36,7 @@ class AboutDialog(QDialog, FORM_CLASS):
         super().__init__(parent)
         self.setupUi(self)
         self.plugin_name.setText("RMCGEO")
-        self.plugin_version.setText("Versão 1.9.0")
+        self.plugin_version.setText("Versão 1.10.0")
 
         #Conecta o botão de fechar
         self.close.accepted.connect(self.accept)
