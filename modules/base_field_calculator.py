@@ -231,22 +231,33 @@ class BaseCalculadoraTabela(QDialog, FORM_CLASS):
 
     def calcular_valores_feicoes(self, layer, expression, context, field_index):
         """Calcula e atualiza os valores para todas as feições"""
+        # Agrupa todas as alterações em um único comando de edição
+        layer.beginEditCommand(f"Calcular Campo {self.field_name} (RMCGEO)")
+
         feature_count = 0
         error_count = 0
-        for feature in layer.getFeatures():
-            context.setFeature(feature)
-            value = expression.evaluate(context)
+        try:
+            for feature in layer.getFeatures():
+                context.setFeature(feature)
+                value = expression.evaluate(context)
 
-            # Verifica se houve erro na avaliação
-            if expression.hasEvalError():
-                error_count += 1
-                if error_count == 1:  # Mostra apenas o primeiro erro
-                    raise Exception(f"Erro ao calcular valor: {expression.evalErrorString()}")
+                # Verifica se houve erro na avaliação
+                if expression.hasEvalError():
+                    error_count += 1
+                    if error_count == 1:  # Mostra apenas o primeiro erro
+                        raise Exception(f"Erro ao calcular valor: {expression.evalErrorString()}")
 
-            value = self.formatar_valor(value)
-            layer.changeAttributeValue(feature.id(), field_index, value)
-            feature_count += 1
-        return feature_count
+                value = self.formatar_valor(value)
+                layer.changeAttributeValue(feature.id(), field_index, value)
+                feature_count += 1
+            
+            # Se terminou o loop com sucesso, confirma o comando
+            layer.endEditCommand()
+            return feature_count
+        except Exception:
+            # Em caso de erro, cancela apenas este comando de cálculo
+            layer.destroyEditCommand()
+            raise
 
     def mostrar_resultado(self, field_exists, feature_count):
         """Mostra mensagem de sucesso ao usuário"""
@@ -284,9 +295,19 @@ class BaseCalculadoraTabela(QDialog, FORM_CLASS):
             layer.startEditing()
 
         try:
+            # Se já estivermos editando, o EditCommand dentro de calcular_valores_feicoes
+            # cuidará da proteção e do Undo atômico.
+            
             # Cria o campo se não existir
             if not field_exists:
+                # O addAttribute também deve ser protegido se a camada já estiver em edição
+                if was_editing:
+                    layer.beginEditCommand(f"Adicionar Coluna {self.field_name}")
+                
                 self.criar_campo(layer)
+                
+                if was_editing:
+                    layer.endEditCommand()
 
             # Obtém o índice do campo
             field_index = layer.fields().indexFromName(self.field_name)
@@ -294,7 +315,7 @@ class BaseCalculadoraTabela(QDialog, FORM_CLASS):
             # Prepara a expressão
             expression, context = self.preparar_expressao(layer, current_expression)
 
-            # Calcula os valores
+            # Calcula os valores (esta função agora tem seu próprio EditCommand interno)
             feature_count = self.calcular_valores_feicoes(layer, expression, context, field_index)
 
             # Mostra resultado
@@ -305,8 +326,10 @@ class BaseCalculadoraTabela(QDialog, FORM_CLASS):
             self.iface.mapCanvas().refresh()
 
         except Exception as e:
-            # Em caso de erro, desfaz as alterações
-            layer.rollBack()
+            # Mudança Crítica: Só damos Rollback se foi nossa ferramenta que iniciou a edição
+            if not was_editing:
+                layer.rollBack()
+            
             self.status_label.setText("Status: Erro no processamento")
             QMessageBox.critical(
                 self,
