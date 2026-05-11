@@ -43,7 +43,14 @@ class PointInsert(QgsMapTool):
 
     def canvasPressEvent(self, event):
         # Verifica se foi clique com botão direito
-        if event.button() == 2:  # 2 é o botão direito do mouse
+        try:
+            right_button = Qt.MouseButton.RightButton  # Qt6
+        except AttributeError:
+            right_button = Qt.RightButton  # Qt5
+
+        if event.button() == right_button:
+            if self.dialog.isVisible():
+                self.dialog.close()
             self.canvas.unsetMapTool(self)
             return
 
