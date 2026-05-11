@@ -326,23 +326,38 @@ class OffsetTool(QgsMapTool):
         if not self.ensure_edit_mode(layer):
             return False
 
-        feature = QgsFeature(layer.fields())
-        feature.setGeometry(geometry)
+        # Inicia um comando de edição para que a ação possa ser desfeita (Undo)
+        layer.beginEditCommand("Criar Offset (RMCGEO)")
 
-        if attributes:
-            for field_name, value in attributes.items():
-                field_index = layer.fields().indexOf(field_name)
-                if field_index >= 0:
-                    feature.setAttribute(field_index, value)
+        try:
+            feature = QgsFeature(layer.fields())
+            feature.setGeometry(geometry)
 
-        success = layer.addFeature(feature)
+            if attributes:
+                for field_name, value in attributes.items():
+                    field_index = layer.fields().indexOf(field_name)
+                    if field_index >= 0:
+                        feature.setAttribute(field_index, value)
 
-        if success:
-            layer.updateExtents()
-            layer.triggerRepaint()
-            self.canvas.refresh()
+            success = layer.addFeature(feature)
 
-        return success
+            if success:
+                # Finaliza o comando com sucesso
+                layer.endEditCommand()
+                layer.updateExtents()
+                layer.triggerRepaint()
+                self.canvas.refresh()
+                return True
+            else:
+                # Cancela o comando em caso de falha no addFeature
+                layer.destroyEditCommand()
+                return False
+
+        except Exception as e:
+            # Cancela o comando em caso de erro inesperado
+            layer.destroyEditCommand()
+            print(f"Erro ao adicionar feição de offset: {str(e)}")
+            return False
 
     def create_rubber_band(self, geom_type=QgsWkbTypes.LineGeometry, color=None, width=2):
         """Cria um rubber band para preview visual."""
